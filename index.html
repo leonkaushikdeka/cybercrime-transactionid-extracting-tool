@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Crime Reporting Assistant - Bank Statement Analyzer</title>
+    <style>
+        /* --- Professional Color System --- */
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --success: #059669;
+            --success-light: #10b981;
+            --danger: #dc2626;
+            --danger-light: #ef4444;
+            --warning: #d97706;
+            --warning-light: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-sm: 4px;
+            --radius: 6px;
+            --radius-md: 8px;
+            --radius-lg: 10px;
+            --radius-xl: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+        .hidden { display: none !important; }
+
+        /* --- Header --- */
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 20px 0;
+            margin-bottom: 24px;
+        }
+
+        .header-inner { display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-section { display: flex; align-items: center; gap: 16px; }
+        
+        .logo-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-icon svg { width: 24px; height: 24px; fill: var(--white); }
+
+        .header-text h1 {
+            font-size: 20px; font-weight: 700; color: var(--gray-900);
+            letter-spacing: -0.025em;
+        }
+
+        .header-text p {
+            font-size: 13px; color: var(--gray-500); margin-top: 2px;
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 14px; font-weight: 500;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-300);
+            background: var(--white);
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover { background: var(--gray-50); border-color: var(--gray-400); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .btn-primary {
+            background: var(--primary); border-color: var(--primary);
+            color: var(--white);
+        }
+        .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+        .btn-success {
+            background: var(--success); border-color: var(--success);
+            color: var(--white);
+        }
+        .btn-success:hover { background: #047857; border-color: #047857; }
+
+        .btn-danger {
+            background: var(--danger); border-color: var(--danger);
+            color: var(--white);
+        }
+        .btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
+
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+        .btn-icon { padding: 8px; }
+
+        /* --- Upload Section --- */
+        .upload-area {
+            background: var(--white);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 48px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .upload-icon {
+            width: 64px; height: 64px;
+            margin: 0 auto 20px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .upload-icon svg { width: 32px; height: 32px; fill: var(--gray-400); }
+
+        .upload-area h2 {
+            font-size: 18px; font-weight: 600; color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            font-size: 14px; color: var(--gray-500); margin-bottom: 20px;
+        }
+
+        .upload-area .file-types {
+            font-size: 12px; color: var(--gray-400);
+            margin-top: 16px;
+        }
+
+        /* --- Progress Section --- */
+        .progress-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .progress-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .progress-info { display: flex; align-items: center; gap: 12px; }
+
+        .progress-spinner {
+            width: 24px; height: 24px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .progress-text {
+            font-size: 14px; font-weight: 500; color: var(--gray-700);
+        }
+
+        .progress-percent {
+            font-size: 13px; color: var(--gray-500);
+        }
+
+        .progress-bar {
+            height: 6px; background: var(--gray-200);
+            border-radius: 3px; overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%; background: var(--primary);
+            border-radius: 3px; transition: width 0.3s ease;
+        }
+
+        /* --- Stats Grid --- */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--gray-300);
+        }
+
+        .stat-card.primary { border-left-color: var(--primary); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.danger { border-left-color: var(--danger); }
+        .stat-card.warning { border-left-color: var(--warning); }
+
+        .stat-label {
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--gray-500); margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 22px; font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .summary-value {
+            font-size: 22px; font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        /* --- Quick Stats --- */
+        .quick-stats {
+            display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+        }
+
+        .quick-stat {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white);
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .quick-stat svg {
+            flex-shrink: 0;
+        }
+
+        .quick-stat-info {
+            display: flex; flex-direction: column;
+        }
+
+        .quick-stat-value {
+            font-size: 18px; font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .quick-stat-label {
+            font-size: 12px; color: var(--gray-500);
+        }
+
+        /* --- Risk Score --- */
+        .risk-panel {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .risk-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .risk-title {
+            font-size: 15px; font-weight: 600; color: var(--gray-800);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .risk-score {
+            font-size: 28px; font-weight: 700;
+        }
+
+        .risk-score.low { color: var(--success); }
+        .risk-score.medium { color: var(--warning); }
+        .risk-score.high { color: var(--danger); }
+
+        .risk-factors {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+
+        .risk-tag {
+            padding: 4px 10px;
+            background: #fef2f2;
+            color: #991b1b;
+            border-radius: var(--radius);
+            font-size: 11px; font-weight: 500;
+        }
+
+        .risk-summary-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;
+        }
+
+        .risk-stat {
+            text-align: center; padding: 16px; border-radius: var(--radius-md);
+        }
+
+        .risk-stat.critical { background: #fef2f2; border: 1px solid #fecaca; }
+        .risk-stat.high { background: #fff7ed; border: 1px solid #fed7aa; }
+        .risk-stat.medium { background: #fefce8; border: 1px solid #fef08a; }
+        .risk-stat.low { background: #f0fdf4; border: 1px solid #bbf7d0; }
+
+        .risk-stat-value {
+            display: block; font-size: 28px; font-weight: 700;
+        }
+
+        .risk-stat.critical .risk-stat-value { color: #dc2626; }
+        .risk-stat.high .risk-stat-value { color: #ea580c; }
+        .risk-stat.medium .risk-stat-value { color: #ca8a04; }
+        .risk-stat.low .risk-stat-value { color: #16a34a; }
+
+        .risk-stat-label {
+            font-size: 12px; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .risk-total {
+            text-align: center; padding: 12px; background: var(--gray-50);
+            border-radius: var(--radius); font-size: 14px; font-weight: 600; color: var(--gray-700);
+        }
+
+        /* --- Risk Indicator Column --- */
+        .risk-indicator {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: var(--radius);
+            font-size: 12px; font-weight: 600; cursor: help;
+        }
+
+        .risk-indicator.critical { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .risk-indicator.high { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+        .risk-indicator.medium { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
+        .risk-indicator.low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+
+        .risk-score-num { font-size: 14px; }
+
+        /* --- Tooltip --- */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden; width: 280px;
+            background: var(--gray-900); color: var(--white);
+            text-align: left; border-radius: var(--radius);
+            padding: 12px; position: absolute; z-index: 100;
+            bottom: 125%; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: opacity 0.2s;
+            font-size: 12px; font-weight: 400; line-height: 1.5;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tooltip .tooltip-text::after {
+            content: ''; position: absolute; top: 100%;
+            left: 50%; margin-left: -6px; border-width: 6px;
+            border-style: solid; border-color: var(--gray-900) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+        .tooltip-factor {
+            display: block; padding: 4px 0; border-bottom: 1px solid var(--gray-700);
+        }
+
+        .tooltip-factor:last-child { border-bottom: none; }
+
+        .tooltip-title {
+            font-weight: 600; margin-bottom: 8px; display: block;
+        }
+
+        /* --- Toolbar --- */
+        .toolbar {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 16px;
+        }
+
+        .toolbar-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+        .search-input {
+            width: 280px; padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 14px;
+            background: var(--gray-50);
+            transition: all 0.15s ease;
+        }
+
+        .search-input:focus {
+            outline: none; border-color: var(--primary);
+            background: var(--white); box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 14px;
+            background: var(--gray-50);
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none; border-color: var(--primary);
+            background: var(--white);
+        }
+
+        /* --- Table --- */
+        .table-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-scroll {
+            overflow-x: auto; max-height: 600px; overflow-y: auto;
+        }
+
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+
+        thead {
+            position: sticky; top: 0;
+            background: var(--gray-50);
+            z-index: 10;
+        }
+
+        th {
+            text-align: left; padding: 14px 16px;
+            font-size: 12px; font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--gray-200);
+            white-space: nowrap;
+        }
+
+        th.sortable {
+            cursor: pointer; user-select: none;
+            transition: background 0.15s ease;
+        }
+
+        th.sortable:hover { background: var(--gray-100); }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px; color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: background 0.1s ease;
+        }
+
+        tbody tr:hover { background: var(--gray-50); }
+
+        tbody tr.suspicious { background: #fef2f2; }
+        tbody tr.suspicious:hover { background: #fee2e2; }
+
+        .amount-debit { color: var(--danger); font-weight: 600; }
+        .amount-credit { color: var(--success); font-weight: 600; }
+
+        .tag-badge {
+            display: inline-block; padding: 4px 10px;
+            border-radius: var(--radius);
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+
+        .tag-badge.fraud { background: #fef2f2; color: #991b1b; }
+        .tag-badge.legit { background: #d1fae5; color: #065f46; }
+        .tag-badge.pending { background: #fef3c7; color: #92400e; }
+
+        .tx-badge {
+            display: inline-block; padding: 3px 8px;
+            background: #e0e7ff; color: #3730a3;
+            border-radius: var(--radius-sm);
+            font-size: 11px; font-family: monospace; font-weight: 600;
+        }
+
+        .upi-badge {
+            display: inline-block; padding: 3px 8px;
+            background: #fef3c7; color: #92400e;
+            border-radius: var(--radius-sm);
+            font-size: 11px; font-family: monospace; font-weight: 600;
+        }
+
+        .notes-input {
+            width: 100%; padding: 6px 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            background: var(--gray-50);
+        }
+
+        .notes-input:focus {
+            outline: none; border-color: var(--primary);
+            background: var(--white);
+        }
+
+        /* --- Batch Toolbar --- */
+        .batch-bar {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            display: none; align-items: center; justify-content: space-between;
+        }
+
+        .batch-bar.active { display: flex; }
+
+        .batch-info {
+            font-size: 14px; color: #1e40af; font-weight: 500;
+        }
+
+        /* --- Charts Section --- */
+        .charts-panel {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .charts-title {
+            font-size: 14px; font-weight: 600; color: var(--gray-700);
+            margin-bottom: 20px;
+        }
+
+        .charts-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        .chart-box {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .chart-header {
+            font-size: 12px; font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        /* --- Timeline --- */
+        .timeline-panel {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .timeline {
+            position: relative; padding-left: 28px;
+        }
+
+        .timeline::before {
+            content: ''; position: absolute; left: 9px; top: 8px; bottom: 8px;
+            width: 2px; background: var(--gray-200);
+        }
+
+        .timeline-item {
+            position: relative; padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: ''; position: absolute; left: -22px; top: 4px;
+            width: 12px; height: 12px;
+            background: var(--primary);
+            border: 2px solid var(--white);
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .timeline-item.suspicious::before { background: var(--danger); }
+
+        .timeline-date {
+            font-size: 12px; color: var(--gray-500); margin-bottom: 4px;
+        }
+
+        .timeline-desc {
+            font-size: 14px; color: var(--gray-800); margin-bottom: 4px;
+        }
+
+        .timeline-amount {
+            font-size: 13px; font-weight: 600;
+        }
+
+        .timeline-amount.debit { color: var(--danger); }
+        .timeline-amount.credit { color: var(--success); }
+
+        /* --- Help Section --- */
+        .help-panel {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-top: 32px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .help-panel h3 {
+            font-size: 16px; font-weight: 600; color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+
+        .help-panel p {
+            font-size: 14px; color: var(--gray-600); margin-bottom: 12px;
+        }
+
+        .help-panel ul {
+            list-style: none; padding: 0;
+        }
+
+        .help-panel li {
+            font-size: 14px; color: var(--gray-600);
+            padding: 6px 0; padding-left: 20px; position: relative;
+        }
+
+        .help-panel li::before {
+            content: ''; position: absolute; left: 0; top: 12px;
+            width: 6px; height: 6px;
+            background: var(--warning);
+            border-radius: 50%;
+        }
+
+        .privacy-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #dbeafe; color: #1e40af;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+            margin-top: 16px;
+        }
+
+        /* --- Notifications --- */
+        .notification-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+
+        .toast {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 10px;
+            font-size: 14px; font-weight: 500;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+        .toast.info { border-left: 4px solid var(--primary); }
+
+        /* --- Modal --- */
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-backdrop.active { display: flex; }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            max-width: 560px; width: 90%; max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 17px; font-weight: 600; color: var(--gray-900);
+        }
+
+        .modal-close {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border: none; background: none;
+            font-size: 24px; color: var(--gray-400);
+            cursor: pointer; border-radius: var(--radius);
+        }
+
+        .modal-close:hover { background: var(--gray-100); color: var(--gray-600); }
+
+        .modal-body { padding: 24px; }
+
+        .detail-row {
+            display: flex; padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .detail-label {
+            width: 130px; font-size: 13px; color: var(--gray-500);
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            flex: 1; font-size: 14px; color: var(--gray-800); word-break: break-all;
+        }
+
+        .detail-value.suspicious { color: var(--danger); font-weight: 500; }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-200);
+            display: flex; gap: 12px; justify-content: flex-end;
+        }
+
+        /* --- Storage Indicator --- */
+        .storage-indicator {
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 10px 16px;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 13px; display: none; align-items: center; gap: 8px;
+            z-index: 100;
+        }
+
+        .storage-indicator.active { display: flex; }
+
+        .storage-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+        }
+
+        .storage-dot.saved { background: var(--success); }
+        .storage-dot.saving { background: var(--warning); }
+
+        /* --- Empty State --- */
+        .empty-state {
+            padding: 60px 20px; text-align: center;
+            color: var(--gray-500);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-group { width: 100%; }
+            .search-input { width: 100%; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                </div>
+                <div class="header-text">
+                    <h1>Cyber Crime Reporting Assistant</h1>
+                    <p>Securely extract, analyze, and prepare financial evidence for fraud reporting</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-sm" onclick="App.loadDemo()">Load Demo Data</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="notification-area" id="notificationArea"></div>
+
+        <div class="upload-area" id="uploadSection">
+            <div class="upload-icon">
+                <svg viewBox="0 0 24 24" fill="#9ca3af"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+            </div>
+            <h2>Upload Bank Statement</h2>
+            <p>Drag and drop your file here, or click to browse</p>
+            <input type="file" id="fileInput" class="hidden" accept=".pdf,.csv,.xlsx,.xls" aria-label="Upload bank statement">
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                Choose File
+            </button>
+            <p class="file-types">Supported formats: CSV, Excel (.xlsx, .xls), PDF</p>
+        </div>
+
+        <div class="progress-section" id="progressContainer">
+            <div class="progress-header">
+                <div class="progress-info">
+                    <div class="progress-spinner"></div>
+                    <span class="progress-text" id="progressText">Processing file...</span>
+                </div>
+                <span class="progress-percent" id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <button class="btn btn-danger btn-sm" style="margin-top: 12px;" id="cancelBtn">Cancel</button>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="stats-grid hidden" id="summaryCards">
+            <div class="stat-card">
+                <h3>Total Transactions</h3>
+                <div class="summary-value" id="totalTransactions">0</div>
+            </div>
+            <div class="stat-card danger">
+                <h3>Total Debits</h3>
+                <div class="summary-value" id="totalDebits">Rs 0</div>
+            </div>
+            <div class="stat-card success">
+                <h3>Total Credits</h3>
+                <div class="summary-value" id="totalCredits">Rs 0</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>Suspicious</h3>
+                <div class="summary-value" id="suspiciousCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Selected</h3>
+                <div class="summary-value" id="selectedTransactions">0</div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats hidden" id="quickStats">
+            <div class="quick-stat">
+                <svg viewBox="0 0 24 24" fill="#6b7280" width="22" height="22"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                <div class="quick-stat-info">
+                    <span class="quick-stat-value" id="avgTransaction">Rs 0</span>
+                    <span class="quick-stat-label">Avg Transaction</span>
+                </div>
+            </div>
+            <div class="quick-stat">
+                <svg viewBox="0 0 24 24" fill="#6b7280" width="22" height="22"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                <div class="quick-stat-info">
+                    <span class="quick-stat-value" id="activeDays">0</span>
+                    <span class="quick-stat-label">Active Days</span>
+                </div>
+            </div>
+            <div class="quick-stat">
+                <svg viewBox="0 0 24 24" fill="#6b7280" width="22" height="22"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                <div class="quick-stat-info">
+                    <span class="quick-stat-value" id="largestDebit">Rs 0</span>
+                    <span class="quick-stat-label">Largest Debit</span>
+                </div>
+            </div>
+            <div class="quick-stat">
+                <svg viewBox="0 0 24 24" fill="#6b7280" width="22" height="22"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                <div class="quick-stat-info">
+                    <span class="quick-stat-value" id="upiCount">0</span>
+                    <span class="quick-stat-label">UPI Transactions</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Score -->
+        <div class="risk-panel hidden" id="riskScoreContainer">
+            <div class="risk-header">
+                <div class="risk-title">
+                    <svg viewBox="0 0 24 24" fill="#d97706" width="18" height="18"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                    Risk Assessment Score
+                </div>
+                <div class="risk-score risk-low" id="riskScoreValue">0/100</div>
+            </div>
+            <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 8px;">
+                Based on transaction patterns, frequency, and suspicious indicators
+            </p>
+            <div class="risk-factors" id="riskFactors"></div>
+        </div>
+
+        <!-- Risk Summary Panel -->
+        <div class="risk-panel hidden" id="riskSummaryPanel">
+            <div class="risk-header">
+                <div class="risk-title">
+                    <svg viewBox="0 0 24 24" fill="#d97706" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    Risk Analysis Summary
+                </div>
+            </div>
+            <div class="risk-summary-grid" id="riskSummaryGrid">
+                <div class="risk-stat critical">
+                    <span class="risk-stat-value" id="criticalCount">0</span>
+                    <span class="risk-stat-label">Critical</span>
+                </div>
+                <div class="risk-stat high">
+                    <span class="risk-stat-value" id="highCount">0</span>
+                    <span class="risk-stat-label">High Risk</span>
+                </div>
+                <div class="risk-stat medium">
+                    <span class="risk-stat-value" id="mediumCount">0</span>
+                    <span class="risk-stat-label">Medium Risk</span>
+                </div>
+                <div class="risk-stat low">
+                    <span class="risk-stat-value" id="lowCount">0</span>
+                    <span class="risk-stat-label">Low Risk</span>
+                </div>
+            </div>
+            <div class="risk-total" id="riskTotalAmount">
+                Total at Risk: Rs 0
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-panel hidden" id="chartsSection">
+            <div class="chart-title">Transaction Overview</div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Daily Activity (Last 7 Days)</div>
+                    <div class="bar-chart" id="dailyChart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Transaction Categories</div>
+                    <div class="pie-chart" id="categoryChart">
+                        <div class="pie-legend" id="categoryLegend"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="timeline-panel hidden" id="timelineSection">
+            <div class="chart-title">Transaction Timeline</div>
+            <div class="timeline" id="timeline"></div>
+        </div>
+
+        <!-- Batch Toolbar -->
+        <div class="batch-toolbar hidden" id="batchToolbar">
+            <div class="batch-info">
+                <span id="batchCount">0</span> transactions selected
+            </div>
+            <div class="batch-actions">
+                <button class="btn btn-danger" onclick="App.deleteSelected()">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    Delete
+                </button>
+                <button class="btn" onclick="App.tagSelected('fraud')">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    Mark Fraud
+                </button>
+                <button class="btn" onclick="App.tagSelected('legit')">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    Mark Legit
+                </button>
+                <button class="btn" onclick="App.clearBatch()">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="hidden" id="workspace">
+            
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="filter-group">
+                    <input type="text" id="searchFilter" placeholder="Search description, UPI, ID..." aria-label="Search transactions">
+                    <input type="date" id="dateFromFilter" aria-label="Date from">
+                    <input type="date" id="dateToFilter" aria-label="Date to">
+                    <select id="typeFilter" aria-label="Filter by type">
+                        <option value="all">All Types</option>
+                        <option value="debit">Debits Only</option>
+                        <option value="credit">Credits Only</option>
+                    </select>
+                    <select id="riskFilter" aria-label="Filter by risk level">
+                        <option value="all">All Risk Levels</option>
+                        <option value="critical">Critical Risk Only</option>
+                        <option value="high">High Risk Only</option>
+                        <option value="medium_high">Medium+ Risk</option>
+                        <option value="suspicious">Flagged Transactions</option>
+                    </select>
+                </div>
+                <div class="action-group">
+                    <button class="btn btn-primary" onclick="App.runRiskAnalysis()" title="Analyze all transactions for fraud patterns">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h-2V7h4v10z"/></svg>
+                        Analyze Risk
+                    </button>
+                    <button class="btn" onclick="App.toggleBatchMode()" title="Select multiple transactions">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        Batch Select
+                    </button>
+                    <button class="btn" onclick="App.showTimeline()" title="View transaction timeline">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                        Timeline
+                    </button>
+                    <button class="btn" onclick="App.showCharts()" title="View analytics charts">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                        Charts
+                    </button>
+                    <button class="btn" onclick="App.viewDetails()" title="View transaction details">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        Details
+                    </button>
+                    <button class="btn" onclick="App.saveProgress()" title="Save progress locally">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                        Save
+                    </button>
+                    <button class="btn" onclick="App.loadProgress()" title="Load saved progress">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+                        Load
+                    </button>
+                    <button class="btn btn-primary" onclick="App.copyToClipboard()" title="Copy selected to clipboard">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copy
+                    </button>
+                    <button class="btn btn-primary" onclick="App.exportCSV()" title="Export selected to CSV">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transaction Table -->
+            <div class="table-wrapper" tabindex="0">
+                <table id="transactionTable" role="grid" aria-label="Transaction List">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" id="selectAll" aria-label="Select all transactions"></th>
+                            <th data-sort="date" class="sortable">Date</th>
+                            <th data-sort="description" class="sortable">Description</th>
+                            <th data-sort="transactionId" class="sortable">Transaction ID</th>
+                            <th data-sort="upiId" class="sortable">UPI ID</th>
+                            <th data-sort="amount" class="sortable">Amount</th>
+                            <th data-sort="balance" class="sortable">Balance</th>
+                            <th style="width: 80px;">Risk</th>
+                            <th>Tag</th>
+                            <th style="width: 150px;">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTableBody">
+                        <!-- Rows rendered via JS -->
+                    </tbody>
+                </table>
+                <div id="noDataMessage" class="hidden" style="padding: 40px; text-align: center; color: var(--text-secondary);">
+                    No transactions found matching your filters.
+                </div>
+            </div>
+        </div>
+
+        <div class="help-panel">
+            <h3>Reporting Information Requirements</h3>
+            <p>Cyber crime portals (e.g., cybercell.gov.in) typically require specific data points to register a complaint.</p>
+            <ul>
+                <li><strong>Transaction ID (UTR/RRN):</strong> 12-22 digit unique reference number.</li>
+                <li><strong>Beneficiary Details:</strong> Bank Name, Account Number, or UPI ID.</li>
+                <li><strong>Date & Amount:</strong> Precise timestamp and value.</li>
+            </ul>
+            <p style="margin-top: 8px;"><strong>Tip:</strong> Use the <strong>Copy</strong> button after selecting transactions to quickly paste formatted data into your complaint form.</p>
+            
+            <div class="privacy-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                100% Client-Side Processing - No Data Uploaded
+            </div>
+        </div>
+
+        <div class="modal-backdrop" id="detailModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <span class="modal-title">Transaction Details</span>
+                    <button class="modal-close" onclick="App.closeModal('detailModal')">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="App.deleteCurrentTransaction()">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        Delete
+                    </button>
+                    <button class="btn btn-primary" onclick="App.copyTransactionDetails()">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copy Details
+                    </button>
+                    <button class="btn" onclick="App.closeModal('detailModal')">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="storage-indicator" id="storageIndicator">
+            <div class="storage-dot saved"></div>
+            <span id="storageStatus">Auto-saved</span>
+        </div>
+    </main>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <script>
+        /**
+         * CONFIGURATION & CONSTANTS
+         */
+        window.CONFIG = {
+            MAX_FILE_SIZE: 15 * 1024 * 1024, // 15MB
+            DEBOUNCE_DELAY: 300,
+            SUSPICIOUS_AMOUNT_THRESHOLD: 50000,
+            REPEAT_COUNT_THRESHOLD: 2,
+            SUPPORTED_TYPES: ['.csv', '.xlsx', '.xls', '.pdf'],
+            DATE_FORMATS: ['DD/MM/YYYY', 'YYYY-MM-DD', 'DD-MM-YYYY']
+        };
+
+        /**
+         * SECURITY: Sanitization Utilities
+         * Prevents XSS by escaping HTML characters
+         */
+        window.Sanitizer = {
+            escapeHTML(str) {
+                if (str === null || str === undefined) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            },
+            
+            // Safe text content setter for elements
+            setText(element, text) {
+                element.textContent = text || '';
+            }
+        };
+
+        /**
+         * UTILITY FUNCTIONS
+         */
+        window.Utils = {
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => { clearTimeout(timeout); func.apply(this, args); };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+
+            formatCurrency(amount) {
+                const absAmount = Math.abs(amount);
+                const formatted = new Intl.NumberFormat('en-IN', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                }).format(absAmount);
+                return amount < 0 ? `-Rs ${formatted}` : `Rs ${formatted}`;
+            },
+
+            formatDate(dateStr) {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr; // Return original if invalid
+                return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: '2-digit' });
+            },
+
+            generateId() {
+                return '_' + Math.random().toString(36).substr(2, 9);
+            }
+        };
+
+        /**
+         * FRAUD DETECTION LOGIC - Enhanced with Multi-Layer Analysis
+         */
+        window.FraudDetector = {
+            // Scam keyword patterns organized by category
+            SCAM_PATTERNS: {
+                lottery_prize: /lottery|prize|winner|award|lucky draw|抽奖|获奖/gi,
+                financial_schemes: /bitcoin|crypto|cryptocurrency|forex|trading|investment|profit|returns|dividend/gi,
+                urgent_scam: /urgent|immediate|limited time|act now|verify now|account blocked|blocked account/gi,
+                government_impersonation: /aadhar|pan card|kyc|bank verify|government|tax refund|customs/gi,
+                job_scam: /job offer|work from home|part time|freelance payment|recruitment/gi,
+                romance_scam: /love|romance|dating|match|partner|marriage/gi,
+                refund_scam: /refund|cashback|duplicate|wrong transfer|returned/gi,
+                tech_scam: /upi app|app update|software|technical support|microsoft|google/gi
+            },
+
+            // Round amount thresholds
+            ROUND_AMOUNTS: [1000, 2000, 5000, 10000, 15000, 20000, 25000, 50000, 75000, 100000],
+
+            // Risk weights for each factor
+            RISK_WEIGHTS: {
+                keyword_match: 25,
+                high_amount: 20,
+                very_high_amount: 35,
+                round_amount: 10,
+                repeated_amount: 15,
+                repeated_recipient: 15,
+                late_night: 15,
+                new_recipient: 5,
+                burst_pattern: 20
+            },
+
+            // Risk level thresholds
+            RISK_THRESHOLDS: {
+                low: 25,
+                medium: 50,
+                high: 75,
+                critical: 90
+            },
+
+            // Analyze all transactions with multi-layer detection
+            analyze(transactions) {
+                // Reset previous analysis
+                transactions.forEach(t => {
+                    t.riskScore = 0;
+                    t.riskLevel = 'low';
+                    t.riskFactors = [];
+                    t.isSuspicious = false;
+                    t.suspicionReason = '';
+                });
+
+                // Pre-compute statistics
+                const upiFrequency = {};
+                const amountFrequency = {};
+                const timeBuckets = {};
+                const amounts = transactions.filter(t => t.type === 'debit').map(t => Math.abs(t.amount));
+                const avgAmount = amounts.length > 0 ? amounts.reduce((a, b) => a + b, 0) / amounts.length : 0;
+
+                transactions.forEach(t => {
+                    // UPI frequency
+                    if (t.upiId) {
+                        upiFrequency[t.upiId] = (upiFrequency[t.upiId] || 0) + 1;
+                    }
+                    
+                    // Amount frequency
+                    if (t.type === 'debit') {
+                        const amtKey = Math.abs(t.amount);
+                        amountFrequency[amtKey] = (amountFrequency[amtKey] || 0) + 1;
+                        
+                        // Time bucket for burst detection (30-minute windows)
+                        const txDate = new Date(t.date);
+                        const bucket = `${txDate.getFullYear()}-${txDate.getMonth()}-${txDate.getDate()}-${Math.floor(txDate.getHours() / 0.5)}`;
+                        timeBuckets[bucket] = (timeBuckets[bucket] || 0) + 1;
+                    }
+                });
+
+                // Analyze each transaction
+                transactions.forEach(txn => {
+                    const factors = this.analyzeTransaction(txn, {
+                        upiFrequency,
+                        amountFrequency,
+                        timeBuckets,
+                        avgAmount,
+                        repeatedRecipients: this.getRepeatedRecipients(transactions),
+                        newRecipients: this.getNewRecipients(transactions)
+                    });
+
+                    txn.riskScore = Math.min(factors.reduce((sum, f) => sum + f.weight, 0), 100);
+                    txn.riskLevel = this.getRiskLevel(txn.riskScore);
+                    txn.riskFactors = factors;
+                    txn.isSuspicious = txn.riskLevel === 'high' || txn.riskLevel === 'critical';
+                    txn.suspicionReason = txn.isSuspicious ? factors.map(f => f.text).join(', ') : '';
+                });
+
+                // Return count of suspicious transactions
+                return transactions.filter(t => t.isSuspicious).length;
+            },
+
+            // Analyze a single transaction
+            analyzeTransaction(txn, context) {
+                const factors = [];
+                const desc = txn.description.toLowerCase();
+                const amount = Math.abs(txn.amount);
+                const txDate = new Date(txn.date);
+                const hour = txDate.getHours();
+
+                // 1. Keyword Pattern Detection
+                for (const [category, pattern] of Object.entries(this.SCAM_PATTERNS)) {
+                    if (pattern.test(desc)) {
+                        factors.push({
+                            type: 'keyword',
+                            category: category,
+                            text: this.getKeywordLabel(category),
+                            weight: this.RISK_WEIGHTS.keyword_match
+                        });
+                    }
+                }
+
+                // 2. Amount-based checks
+                if (txn.type === 'debit') {
+                    if (amount >= 100000) {
+                        factors.push({
+                            type: 'amount',
+                            text: 'Very high amount: Rs ' + (amount / 100000).toFixed(1) + 'L',
+                            weight: this.RISK_WEIGHTS.very_high_amount
+                        });
+                    } else if (amount >= 50000) {
+                        factors.push({
+                            type: 'amount',
+                            text: 'High amount: Rs ' + (amount / 1000).toFixed(0) + 'K+',
+                            weight: this.RISK_WEIGHTS.high_amount
+                        });
+                    }
+
+                    // Round amount check
+                    if (this.isRoundAmount(amount)) {
+                        factors.push({
+                            type: 'amount',
+                            text: 'Round amount (suspicious)',
+                            weight: this.RISK_WEIGHTS.round_amount
+                        });
+                    }
+
+                    // Repeated amount
+                    if (context.amountFrequency[amount] >= 3) {
+                        factors.push({
+                            type: 'pattern',
+                            text: `Repeated amount (${context.amountFrequency[amount]}x)`,
+                            weight: this.RISK_WEIGHTS.repeated_amount
+                        });
+                    }
+
+                    // Unusual amount (3x average)
+                    if (context.avgAmount > 0 && amount > context.avgAmount * 3) {
+                        factors.push({
+                            type: 'amount',
+                            text: 'Unusual amount (3x average)',
+                            weight: 15
+                        });
+                    }
+                }
+
+                // 3. Time-based checks
+                if (hour >= 1 && hour <= 5) {
+                    factors.push({
+                        type: 'time',
+                        text: `Late night (${hour}:00)`,
+                        weight: this.RISK_WEIGHTS.late_night
+                    });
+                }
+
+                // 4. Recipient checks
+                if (txn.upiId) {
+                    // Repeated recipient
+                    if (context.upiFrequency[txn.upiId] >= 3) {
+                        factors.push({
+                            type: 'recipient',
+                            text: `Repeated recipient (${context.upiFrequency[txn.upiId]}x)`,
+                            weight: this.RISK_WEIGHTS.repeated_recipient
+                        });
+                    }
+
+                    // New recipient check
+                    if (context.newRecipients.has(txn.upiId)) {
+                        factors.push({
+                            type: 'recipient',
+                            text: 'New recipient',
+                            weight: this.RISK_WEIGHTS.new_recipient
+                        });
+                    }
+                }
+
+                // 5. Burst pattern check
+                const bucket = `${txDate.getFullYear()}-${txDate.getMonth()}-${txDate.getDate()}-${Math.floor(txDate.getHours() / 0.5)}`;
+                if (context.timeBuckets[bucket] >= 5) {
+                    factors.push({
+                        type: 'pattern',
+                        text: `Burst: ${context.timeBuckets[bucket]} transactions in 30 min`,
+                        weight: this.RISK_WEIGHTS.burst_pattern
+                    });
+                }
+
+                return factors;
+            },
+
+            // Check if amount is round (common in scams)
+            isRoundAmount(amount) {
+                return this.ROUND_AMOUNTS.some(round => 
+                    Math.abs(amount - round) < 100 || 
+                    amount % round === 0
+                );
+            },
+
+            // Get human-readable label for keyword category
+            getKeywordLabel(category) {
+                const labels = {
+                    lottery_prize: 'Lottery/Prize scam',
+                    financial_schemes: 'Crypto/Investment scam',
+                    urgent_scam: 'Urgency scam',
+                    government_impersonation: 'Government impersonation',
+                    job_scam: 'Job scam',
+                    romance_scam: 'Romance scam',
+                    refund_scam: 'Refund scam',
+                    tech_scam: 'Tech support scam'
+                };
+                return labels[category] || category;
+            },
+
+            // Get risk level from score
+            getRiskLevel(score) {
+                if (score >= this.RISK_THRESHOLDS.critical) return 'critical';
+                if (score >= this.RISK_THRESHOLDS.high) return 'high';
+                if (score >= this.RISK_THRESHOLDS.medium) return 'medium';
+                return 'low';
+            },
+
+            // Get repeated recipients (3+ transactions)
+            getRepeatedRecipients(transactions) {
+                const frequency = {};
+                transactions.forEach(t => {
+                    if (t.upiId) frequency[t.upiId] = (frequency[t.upiId] || 0) + 1;
+                });
+                return new Set(Object.keys(frequency).filter(k => frequency[k] >= 3));
+            },
+
+            // Get new recipients (1 transaction only)
+            getNewRecipients(transactions) {
+                const frequency = {};
+                transactions.forEach(t => {
+                    if (t.upiId) frequency[t.upiId] = (frequency[t.upiId] || 0) + 1;
+                });
+                return new Set(Object.keys(frequency).filter(k => frequency[k] === 1));
+            },
+
+            // Run analysis and update UI
+            runAnalysis(transactions) {
+                const count = this.analyze(transactions);
+                return {
+                    count: count,
+                    transactions: transactions
+                };
+            }
+        };
+
+        /**
+         * FILE PARSER MODULE
+         */
+        window.FileParser = {
+            async parse(file, onProgress, onCancel) {
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!CONFIG.SUPPORTED_TYPES.includes(ext)) {
+                    throw new Error(`Unsupported file format: ${ext}`);
+                }
+
+                if (file.size > CONFIG.MAX_FILE_SIZE) {
+                    throw new Error(`File too large (Max ${CONFIG.MAX_FILE_SIZE/1024/1024}MB)`);
+                }
+
+                if (ext === '.csv') return this.parseCSV(file);
+                if (ext === '.xlsx' || ext === '.xls') return this.parseExcel(file);
+                if (ext === '.pdf') return this.parsePDF(file, onProgress, onCancel);
+            },
+
+            parseCSV(file) {
+                return new Promise((resolve, reject) => {
+                    Papa.parse(file, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: (results) => {
+                            if (results.errors.length) console.warn('CSV Warnings:', results.errors);
+                            const processed = results.data.map((row, idx) => this.normalizeRow(row, idx)).filter(r => r);
+                            resolve(processed);
+                        },
+                        error: reject
+                    });
+                });
+            },
+
+            parseExcel(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const sheetName = workbook.SheetNames[0];
+                            const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+                            const processed = jsonData.map((row, idx) => this.normalizeRow(row, idx)).filter(r => r);
+                            resolve(processed);
+                        } catch (err) {
+                            reject(new Error('Excel parsing failed: ' + err.message));
+                        }
+                    };
+                    reader.onerror = () => reject(new Error('Failed to read file'));
+                    reader.readAsArrayBuffer(file);
+                });
+            },
+
+            async parsePDF(file, onProgress, onCancel) {
+                if (typeof pdfjsLib === 'undefined') {
+                    throw new Error('PDF.js library not loaded. Please check your internet connection.');
+                }
+                
+                try {
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                } catch (e) {
+                    console.warn('Could not set PDF worker, falling back to main thread');
+                }
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const totalPages = pdf.numPages;
+                let fullText = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (onCancel && onCancel.isCancelled) throw new Error('Cancelled by user');
+                    
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    // Join text items with space to account for separate PDF text chunks
+                    const pageText = textContent.items.map(item => item.str).join(' '); 
+                    fullText += pageText + '\n';
+                    
+                    if (onProgress) onProgress(Math.round((i / totalPages) * 100));
+                }
+
+                return this.extractPDFData(fullText);
+            },
+
+            // Normalize various bank statement formats to standard object
+            normalizeRow(row, idx) {
+                // Attempt to find keys loosely matching standard names
+                const findKey = (keys) => Object.keys(row).find(k => keys.some(key => k.toLowerCase().includes(key)));
+
+                const dateKey = findKey(['date', 'transaction date', 'value date', 'time']);
+                const descKey = findKey(['description', 'narration', 'particulars', 'remarks', 'details']);
+                const amtKey = findKey(['amount', 'debit', 'credit', 'withdrawal', 'deposit']);
+                const balKey = findKey(['balance', 'closing balance']);
+                
+                if (!row[descKey] && !row[amtKey]) return null; // Skip empty rows
+
+                const desc = String(row[descKey] || '');
+                const rawAmt = String(row[amtKey] || '0').replace(/,/g, '');
+                let amount = parseFloat(rawAmt);
+                
+                // Determine debit/credit based on amount value or specific column logic
+                let type = 'credit';
+                // Check if specific Debit/Credit columns exist
+                const debitKey = findKey(['debit', 'withdrawal']);
+                const creditKey = findKey(['credit', 'deposit']);
+                
+                if (debitKey && creditKey) {
+                     const debitVal = parseFloat(String(row[debitKey] || '0').replace(/,/g, ''));
+                     const creditVal = parseFloat(String(row[creditKey] || '0').replace(/,/g, ''));
+                     if (debitVal > 0) { amount = -Math.abs(debitVal); type = 'debit'; }
+                     else if (creditVal > 0) { amount = Math.abs(creditVal); type = 'credit'; }
+                     else amount = 0;
+                } else {
+                    // Single amount column: negative usually means debit in banking exports
+                    if (amount < 0) type = 'debit';
+                    else type = 'credit';
+                }
+
+                const extracted = this.extractMeta(desc);
+
+                return {
+                    id: idx + 1, // Temporary ID
+                    originalId: Utils.generateId(),
+                    date: this.parseDate(row[dateKey]),
+                    description: desc,
+                    transactionId: extracted.transactionId,
+                    upiId: extracted.upiId,
+                    amount: amount,
+                    balance: parseFloat(String(row[balKey] || '0').replace(/,/g, '')),
+                    type: type,
+                    selected: false,
+                    isSuspicious: false,
+                    notes: ''
+                };
+            },
+
+            extractPDFData(text) {
+                // This is a heuristic regex parser for PDFs.
+                // Bank PDFs vary wildly in format. This tries to catch common patterns.
+                // Format: DATE DESCRIPTION ... AMOUNT
+                const transactions = [];
+                // Regex loosely looking for Date at start, then text, then Amount
+                // Assumes amounts have commas or decimals
+                const lines = text.split('\n');
+                let currentBalance = 0;
+
+                lines.forEach((line, index) => {
+                    // Skip headers/footers heuristic
+                    if (line.length < 10 || /Page|Page No|Opening Balance|Statement/.test(line)) return;
+
+                    // Regex to find: DD/MM/YYYY or DD-MM-YYYY followed by description, ending with Amount pattern
+                    // Pattern: (Date) (Text) (Amount)
+                    const txRegex = /(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})\s+(.+?)\s+((?:\d{1,3}(?:,\d{3})*(?:\.\d{2})?)|(?:\d+))/;
+                    const match = line.match(txRegex);
+
+                    if (match) {
+                        let dateStr = match[1];
+                        let desc = match[2];
+                        let amtStr = match[3].replace(/,/g, '');
+
+                        // Clean up description (sometimes amount gets stuck in description if regex is greedy)
+                        // Remove trailing numbers from description
+                        desc = desc.replace(/\s+Cr\s*$/i, '').replace(/\s+Dr\s*$/i, '').trim();
+
+                        const isDebit = /Dr|Withdrawal|Debit/i.test(line) || (amtStr && parseFloat(amtStr) > 0 && !/Cr|Deposit/i.test(line)); 
+                        // This logic is weak for PDFs, usually needs negative sign check
+                        
+                        let amount = parseFloat(amtStr) || 0;
+                        if (/Dr|Debit/i.test(line)) amount = -amount;
+
+                        const extracted = this.extractMeta(desc);
+
+                        transactions.push({
+                            id: index,
+                            originalId: Utils.generateId(),
+                            date: this.parseDate(dateStr),
+                            description: desc,
+                            transactionId: extracted.transactionId,
+                            upiId: extracted.upiId,
+                            amount: amount,
+                            balance: 0, // PDF parsing often misses running balance per line without complex OCR
+                            type: amount < 0 ? 'debit' : 'credit',
+                            selected: false,
+                            isSuspicious: false,
+                            notes: ''
+                        });
+                    }
+                });
+
+                return transactions;
+            },
+
+            extractMeta(desc) {
+                // Extract UPI ID (format: user@bank)
+                const upiMatch = desc.match(/([a-zA-Z0-9.\-_]+@[a-zA-Z0-9.\-_]+)/);
+                
+                // Extract Transaction ID - multiple patterns
+                // Pattern 1: 12+ digit numbers (UTR/RRN)
+                let txMatch = desc.match(/\b(\d{12,22})\b/);
+                if (!txMatch) {
+                    // Pattern 2: IMPS/UPI/NEFT references
+                    txMatch = desc.match(/(?:IMPS|UPI|NEFT|RTN|RRN)\s*[\/\-]?\s*(\d{8,22})/i);
+                }
+                if (!txMatch) {
+                    // Pattern 3: Reference numbers
+                    txMatch = desc.match(/(?:ref|reference|txn|transaction)[\s\-:]*([A-Z0-9]{8,22})/i);
+                }
+                if (!txMatch) {
+                    // Pattern 4: Standalone 10+ digit numbers
+                    txMatch = desc.match(/\b([0-9]{10,22})\b/);
+                }
+                
+                return {
+                    upiId: upiMatch ? upiMatch[0] : '',
+                    transactionId: txMatch ? txMatch[1] || txMatch[0] : ''
+                };
+            },
+
+            parseDate(dateStr) {
+                if (!dateStr) return '';
+                dateStr = dateStr.trim();
+                
+                // Handle Excel Serial Dates
+                if (!isNaN(dateStr) && Number(dateStr) > 20000) {
+                    const excelDate = new Date(Math.round((Number(dateStr) - 25569) * 86400 * 1000));
+                    return excelDate.toISOString().split('T')[0];
+                }
+
+                // Try Native parsing
+                const d = new Date(dateStr);
+                if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+
+                // Regex parsing for DD/MM/YYYY or DD-MM-YYYY
+                const parts = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+                if (parts) {
+                    let [_, d, m, y] = parts;
+                    if (y.length === 2) y = '20' + y;
+                    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                }
+
+                return dateStr; // Fallback
+            }
+        };
+
+        /**
+         * UI MANAGER
+         */
+        window.UIManager = {
+            elements: {
+                uploadSection: document.getElementById('uploadSection'),
+                progressContainer: document.getElementById('progressContainer'),
+                progressFill: document.getElementById('progressFill'),
+                progressText: document.getElementById('progressText'),
+                progressPercent: document.getElementById('progressPercent'),
+                summaryCards: document.getElementById('summaryCards'),
+                workspace: document.getElementById('workspace'),
+                tableBody: document.getElementById('transactionTableBody'),
+                noData: document.getElementById('noDataMessage'),
+                selectAll: document.getElementById('selectAll'),
+                notificationArea: document.getElementById('notificationArea'),
+                fileInput: document.getElementById('fileInput')
+            },
+
+            state: {
+                transactions: [],
+                filteredTransactions: [],
+                isProcessing: false,
+                cancelToken: { isCancelled: false }
+            },
+
+            init() {
+                this.setupEventListeners();
+                // Set default dates
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('dateToFilter').value = today;
+            },
+
+            setupEventListeners() {
+                // File Upload
+                const { uploadSection, fileInput } = this.elements;
+                
+                uploadSection.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadSection.classList.add('dragover');
+                });
+                
+                uploadSection.addEventListener('dragleave', () => uploadSection.classList.remove('dragover'));
+                
+                uploadSection.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadSection.classList.remove('dragover');
+                    if (this.state.isProcessing) return;
+                    if (e.dataTransfer.files.length) this.handleFileUpload(e.dataTransfer.files[0]);
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) this.handleFileUpload(e.target.files[0]);
+                });
+
+                // Filters - Debounced
+                const debouncedFilter = Utils.debounce(() => App.filterData(), CONFIG.DEBOUNCE_DELAY);
+                document.getElementById('searchFilter').addEventListener('input', debouncedFilter);
+                document.getElementById('dateFromFilter').addEventListener('change', debouncedFilter);
+                document.getElementById('dateToFilter').addEventListener('change', debouncedFilter);
+                document.getElementById('typeFilter').addEventListener('change', debouncedFilter);
+                document.getElementById('riskFilter').addEventListener('change', debouncedFilter);
+
+                // Header Sorting
+                document.querySelectorAll('th.sortable').forEach(th => {
+                    th.addEventListener('click', () => {
+                        const col = th.dataset.sort;
+                        App.sortData(col);
+                    });
+                });
+
+                // Select All Checkbox
+                this.elements.selectAll.addEventListener('change', (e) => {
+                    App.toggleSelectAll(e.target.checked);
+                });
+
+                // Table Delegation (Performance & Memory)
+                this.elements.tableBody.addEventListener('change', (e) => {
+                    // Handle Checkbox
+                    if (e.target.type === 'checkbox' && e.target.classList.contains('row-checkbox')) {
+                        const id = e.target.dataset.id;
+                        App.toggleSelection(id, e.target.checked);
+                    }
+                });
+                
+                // Copy/Paste Shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                        e.preventDefault();
+                        App.selectAll();
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                        e.preventDefault();
+                        App.deselectAll();
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        App.saveProgress();
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                        e.preventDefault();
+                        App.loadProgress();
+                    }
+                    if (e.key === 'Escape') {
+                        App.closeModal('detailModal');
+                    }
+                });
+
+                // Cancel Button
+                document.getElementById('cancelBtn').addEventListener('click', () => {
+                    this.state.cancelToken.isCancelled = true;
+                });
+
+                // Modal overlay click to close
+                document.getElementById('detailModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'detailModal') {
+                        App.closeModal('detailModal');
+                    }
+                });
+            },
+
+            showNotification(msg, type = 'info') {
+                const area = this.elements.notificationArea;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                // Add icon based on type
+                const icons = {
+                    success: '<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+                    error: '<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
+                    warning: '<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+                    info: '<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'
+                };
+                
+                toast.innerHTML = `${icons[type] || icons.info}<span>${msg}</span>`;
+                area.appendChild(toast);
+                
+                // Auto remove after 4 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            },
+
+            setLoading(active, text = 'Processing...') {
+                this.state.isProcessing = active;
+                const { uploadSection, progressContainer, fileInput, progressText } = this.elements;
+                
+                if (active) {
+                    uploadSection.classList.add('hidden');
+                    progressContainer.style.display = 'block';
+                    progressText.textContent = text;
+                    fileInput.disabled = true;
+                    this.state.cancelToken = { isCancelled: false };
+                } else {
+                    uploadSection.classList.remove('hidden');
+                    progressContainer.style.display = 'none';
+                    fileInput.disabled = false;
+                    this.updateProgress(0);
+                }
+            },
+
+            updateProgress(percent) {
+                this.elements.progressFill.style.width = `${percent}%`;
+                this.elements.progressPercent.textContent = `${percent}%`;
+            },
+
+            renderTable(data) {
+                const { tableBody, noData, selectAll } = this.elements;
+                tableBody.innerHTML = '';
+                
+                if (data.length === 0) {
+                    noData.classList.remove('hidden');
+                    return;
+                }
+                noData.classList.add('hidden');
+
+                // DocumentFragment for performance
+                const fragment = document.createDocumentFragment();
+
+                data.forEach(txn => {
+                    const tr = document.createElement('tr');
+                    tr.dataset.id = txn.originalId;
+                    if (txn.isSuspicious) tr.style.backgroundColor = '#fff1f2';
+
+                    // Safe rendering using textContent helper
+                    const tdSelect = document.createElement('td');
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.className = 'row-checkbox';
+                    cb.dataset.id = txn.originalId;
+                    cb.checked = txn.selected;
+                    cb.setAttribute('aria-label', `Select transaction ${txn.description}`);
+                    tdSelect.appendChild(cb);
+
+                    const tdDate = document.createElement('td');
+                    tdDate.textContent = txn.date;
+
+                    const tdDesc = document.createElement('td');
+                    tdDesc.textContent = txn.description;
+                    tdDesc.title = txn.description; // Tooltip
+
+                    const tdTxId = document.createElement('td');
+                    const txId = txn.transactionId || txn.upiId || '';
+                    if (txId) {
+                        const span = document.createElement('span');
+                        span.className = 'badge badge-tx';
+                        span.textContent = txId;
+                        tdTxId.appendChild(span);
+                    }
+
+                    const tdUpi = document.createElement('td');
+                    if (txn.upiId) {
+                        const span = document.createElement('span');
+                        span.className = 'badge badge-upi';
+                        span.textContent = txn.upiId;
+                        tdUpi.appendChild(span);
+                    }
+
+                    const tdAmt = document.createElement('td');
+                    tdAmt.className = `amount-${txn.type}`;
+                    tdAmt.textContent = Utils.formatCurrency(txn.amount);
+
+                    const tdBal = document.createElement('td');
+                    tdBal.textContent = txn.balance ? Utils.formatCurrency(txn.balance) : '-';
+
+                    // Risk indicator cell
+                    const tdRisk = document.createElement('td');
+                    const riskLevel = txn.riskLevel || 'low';
+                    const riskScore = txn.riskScore || 0;
+                    tdRisk.innerHTML = `
+                        <div class="tooltip">
+                            <span class="risk-indicator ${riskLevel}">
+                                <span class="risk-score-num">${riskScore}</span>
+                            </span>
+                            <div class="tooltip-text">
+                                <span class="tooltip-title">Risk Factors:</span>
+                                ${txn.riskFactors && txn.riskFactors.length > 0 
+                                    ? txn.riskFactors.map(f => `<span class="tooltip-factor">${f.text}</span>`).join('')
+                                    : '<span class="tooltip-factor">No risk factors detected</span>'
+                                }
+                            </div>
+                        </div>
+                    `;
+
+                    const tdTag = document.createElement('td');
+                    if (txn.tag) {
+                        const tagSpan = document.createElement('span');
+                        tagSpan.className = `badge ${txn.tag === 'fraud' ? 'badge-suspicious' : txn.tag === 'legit' ? 'badge-tx' : 'badge-upi'}`;
+                        tagSpan.textContent = txn.tag.toUpperCase();
+                        tdTag.appendChild(tagSpan);
+                    }
+
+                    const tdNotes = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'filter-input';
+                    input.placeholder = 'Notes...';
+                    input.value = txn.notes || '';
+                    input.style.width = '100%';
+                    input.onchange = (e) => { txn.notes = e.target.value; };
+                    tdNotes.appendChild(input);
+
+                    tr.append(tdSelect, tdDate, tdDesc, tdTxId, tdUpi, tdAmt, tdBal, tdRisk, tdTag, tdNotes);
+                    if (txn.isSuspicious) tr.classList.add('suspicious');
+                    fragment.appendChild(tr);
+                });
+
+                tableBody.appendChild(fragment);
+                this.updateSummary();
+                
+                // Sync Select All checkbox state
+                const allSelected = data.length > 0 && data.every(t => t.selected);
+                selectAll.checked = allSelected;
+            },
+
+            updateSummary() {
+                const { transactions } = this.state;
+                const selected = transactions.filter(t => t.selected);
+                const suspicious = transactions.filter(t => t.isSuspicious);
+                
+                const totalDebit = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const totalCredit = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+
+                document.getElementById('totalTransactions').textContent = transactions.length;
+                document.getElementById('totalDebits').textContent = Utils.formatCurrency(totalDebit);
+                document.getElementById('totalCredits').textContent = Utils.formatCurrency(totalCredit);
+                document.getElementById('suspiciousCount').textContent = suspicious.length;
+                document.getElementById('selectedTransactions').textContent = selected.length;
+
+                // Update quick stats and risk summary
+                if (transactions.length > 0) {
+                    document.getElementById('quickStats').classList.remove('hidden');
+                    App.updateQuickStats();
+                    App.updateRiskSummary();
+                }
+            },
+
+            async handleFileUpload(file) {
+                if (this.state.isProcessing) return;
+
+                try {
+                    this.setLoading(true, `Parsing ${file.name}...`);
+                    
+                    const data = await FileParser.parse(file, 
+                        (pct) => this.updateProgress(pct), 
+                        () => this.state.cancelToken
+                    );
+                    
+                    if (this.state.cancelToken.isCancelled) {
+                        this.showNotification('Processing cancelled.', 'warning');
+                        return;
+                    }
+
+                    if (data.length === 0) {
+                        throw new Error('No transactions found in file.');
+                    }
+
+                    this.state.transactions = data;
+                    // Initial sort by date desc
+                    this.state.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    this.elements.uploadSection.classList.add('hidden');
+                    this.elements.summaryCards.classList.remove('hidden');
+                    this.elements.workspace.classList.remove('hidden');
+                    this.elements.progressContainer.style.display = 'none'; // Hide progress fully
+
+                    App.filterData();
+                    this.showNotification(`Successfully loaded ${data.length} transactions.`, 'success');
+
+                } catch (err) {
+                    console.error(err);
+                    this.showNotification(err.message || 'Failed to parse file', 'error');
+                    this.elements.uploadSection.classList.remove('hidden');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+        };
+
+        /**
+         * MAIN APPLICATION LOGIC
+         */
+        window.App = {
+            filterData() {
+                const { transactions } = UIManager.state;
+                const search = document.getElementById('searchFilter').value.toLowerCase();
+                const dateFrom = document.getElementById('dateFromFilter').value;
+                const dateTo = document.getElementById('dateToFilter').value;
+                const type = document.getElementById('typeFilter').value;
+                const riskFilter = document.getElementById('riskFilter').value;
+
+                UIManager.state.filteredTransactions = transactions.filter(t => {
+                    const matchesSearch = !search || 
+                        t.description.toLowerCase().includes(search) ||
+                        t.transactionId?.toLowerCase().includes(search) ||
+                        t.upiId?.toLowerCase().includes(search);
+                    
+                    const matchesDate = (!dateFrom || t.date >= dateFrom) && 
+                                       (!dateTo || t.date <= dateTo);
+                    
+                    let matchesType = true;
+                    if (type === 'debit') matchesType = t.type === 'debit';
+                    if (type === 'credit') matchesType = t.type === 'credit';
+
+                    // Risk level filtering
+                    let matchesRisk = true;
+                    const level = t.riskLevel || 'low';
+                    if (riskFilter === 'critical') matchesRisk = level === 'critical';
+                    else if (riskFilter === 'high') matchesRisk = level === 'high' || level === 'critical';
+                    else if (riskFilter === 'medium_high') matchesRisk = level === 'medium' || level === 'high' || level === 'critical';
+                    else if (riskFilter === 'suspicious') matchesRisk = t.isSuspicious;
+
+                    return matchesSearch && matchesDate && matchesType && matchesRisk;
+                });
+
+                UIManager.renderTable(UIManager.state.filteredTransactions);
+            },
+
+            sortData(column) {
+                const { filteredTransactions } = UIManager.state;
+                const currentDir = UIManager.elements.tableBody.dataset.sortDir || 'asc';
+                const newDir = currentDir === 'asc' ? 'desc' : 'asc';
+                
+                UIManager.elements.tableBody.dataset.sortDir = newDir;
+                
+                filteredTransactions.sort((a, b) => {
+                    let valA = a[column];
+                    let valB = b[column];
+
+                    if (column === 'amount' || column === 'balance') {
+                        valA = parseFloat(valA) || 0;
+                        valB = parseFloat(valB) || 0;
+                    } else {
+                        valA = String(valA || '').toLowerCase();
+                        valB = String(valB || '').toLowerCase();
+                    }
+
+                    if (valA < valB) return newDir === 'asc' ? -1 : 1;
+                    if (valA > valB) return newDir === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                UIManager.renderTable(filteredTransactions);
+            },
+
+            toggleSelection(id, isSelected) {
+                const txn = UIManager.state.transactions.find(t => t.originalId === id);
+                if (txn) {
+                    txn.selected = isSelected;
+                    UIManager.updateSummary();
+                    
+                    const currentFiltered = UIManager.state.filteredTransactions;
+                    UIManager.elements.selectAll.checked = currentFiltered.length > 0 && currentFiltered.every(t => t.selected);
+                    
+                    this.updateBatchToolbar();
+                }
+            },
+
+            selectAll() {
+                UIManager.state.filteredTransactions.forEach(t => t.selected = true);
+                UIManager.renderTable(UIManager.state.filteredTransactions);
+                this.updateBatchToolbar();
+            },
+
+            deselectAll() {
+                UIManager.state.transactions.forEach(t => t.selected = false);
+                UIManager.renderTable(UIManager.state.filteredTransactions);
+                this.updateBatchToolbar();
+            },
+
+            toggleSelectAll(checked) {
+                UIManager.state.filteredTransactions.forEach(t => t.selected = checked);
+                UIManager.renderTable(UIManager.state.filteredTransactions);
+                this.updateBatchToolbar();
+            },
+
+            updateBatchToolbar() {
+                const count = UIManager.state.transactions.filter(t => t.selected).length;
+                const toolbar = document.getElementById('batchToolbar');
+                const countEl = document.getElementById('batchCount');
+                if (count > 0) {
+                    toolbar.classList.remove('hidden');
+                    countEl.textContent = count;
+                } else {
+                    toolbar.classList.add('hidden');
+                }
+            },
+
+            runRiskAnalysis() {
+                const { transactions } = UIManager.state;
+                if (transactions.length === 0) {
+                    UIManager.showNotification('No transactions to analyze.', 'error');
+                    return;
+                }
+
+                const count = FraudDetector.analyze(transactions);
+                this.updateRiskSummary();
+                document.getElementById('riskSummaryPanel').classList.remove('hidden');
+                document.getElementById('riskScoreContainer').classList.remove('hidden');
+
+                // Auto-select all high and critical risk transactions
+                transactions.forEach(t => {
+                    if (t.riskLevel === 'high' || t.riskLevel === 'critical') {
+                        t.selected = true;
+                    }
+                });
+
+                // Auto-filter to show suspicious transactions
+                document.getElementById('riskFilter').value = 'medium_high';
+                
+                if (count > 0) {
+                    UIManager.showNotification(`Analysis complete. ${count} transactions flagged as high/critical risk and auto-selected.`, 'warning');
+                } else {
+                    UIManager.showNotification('Analysis complete. No high-risk transactions detected.', 'success');
+                }
+
+                this.filterData();
+                UIManager.updateSummary();
+            },
+
+            updateRiskSummary() {
+                const { transactions } = UIManager.state;
+                const critical = transactions.filter(t => t.riskLevel === 'critical').length;
+                const high = transactions.filter(t => t.riskLevel === 'high').length;
+                const medium = transactions.filter(t => t.riskLevel === 'medium').length;
+                const low = transactions.filter(t => t.riskLevel === 'low' || !t.riskLevel).length;
+
+                document.getElementById('criticalCount').textContent = critical;
+                document.getElementById('highCount').textContent = high;
+                document.getElementById('mediumCount').textContent = medium;
+                document.getElementById('lowCount').textContent = low;
+
+                const atRisk = transactions
+                    .filter(t => t.type === 'debit' && (t.riskLevel === 'high' || t.riskLevel === 'critical'))
+                    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                document.getElementById('riskTotalAmount').textContent = `Total at Risk: Rs ${new Intl.NumberFormat('en-IN').format(atRisk)}`;
+            },
+
+            detectSuspicious() {
+                this.runRiskAnalysis();
+            },
+
+            copyToClipboard() {
+                const selected = UIManager.state.transactions.filter(t => t.selected);
+                if (selected.length === 0) {
+                    UIManager.showNotification('No transactions selected.', 'error');
+                    return;
+                }
+
+                const text = selected.map(t => {
+                    return `Date: ${t.date}\nAmount: ${t.amount}\nTo: ${t.upiId || 'N/A'}\nTxn ID: ${t.transactionId || 'N/A'}\nDesc: ${t.description}\nNotes: ${t.notes}\n-------------------`;
+                }).join('\n');
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        UIManager.showNotification(`Copied ${selected.length} transactions to clipboard.`, 'success');
+                    }).catch(() => {
+                        this.fallbackCopy(text, selected.length);
+                    });
+                } else {
+                    this.fallbackCopy(text, selected.length);
+                }
+            },
+
+            fallbackCopy(text, count) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    UIManager.showNotification(`Copied ${count} transactions to clipboard.`, 'success');
+                } catch (err) {
+                    UIManager.showNotification('Failed to copy to clipboard.', 'error');
+                }
+                document.body.removeChild(textArea);
+            },
+
+            exportCSV() {
+                const selected = UIManager.state.transactions.filter(t => t.selected);
+                if (selected.length === 0) {
+                    UIManager.showNotification('No transactions selected.', 'error');
+                    return;
+                }
+
+                let csvContent = "Date,Description,Transaction ID,UPI ID,Amount,Type,Notes\n";
+                
+                selected.forEach(t => {
+                    const safeDesc = `"${t.description.replace(/"/g, '""')}"`;
+                    const safeNotes = `"${(t.notes || '').replace(/"/g, '""')}"`;
+                    
+                    csvContent += `${t.date},${safeDesc},${t.transactionId || ''},${t.upiId || ''},${t.amount},${t.type},${safeNotes}\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `cyber_evidence_${new Date().toISOString().split('T')[0]}.csv`;
+                
+                // Append to body for proper click handling
+                document.body.appendChild(link);
+                
+                if (typeof MouseEvent === 'function') {
+                    const event = new MouseEvent('click', {
+                        view: window,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    link.dispatchEvent(event);
+                } else {
+                    link.click();
+                }
+                
+                document.body.removeChild(link);
+                UIManager.showNotification(`Exported ${selected.length} transactions to CSV.`, 'success');
+                
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 100);
+            },
+
+            loadDemo() {
+                UIManager.state.transactions = [
+                    { id: 1, originalId: 'd1', date: '2024-01-15', description: 'UPI/rahul123@okicici/IMPS/123456789012345', transactionId: '123456789012345', upiId: 'rahul123@okicici', amount: -25000, balance: 75000, type: 'debit', selected: false, notes: '', isSuspicious: false },
+                    { id: 2, originalId: 'd2', date: '2024-01-15', description: 'UPI/suraj987@ybl/IMPS/123456789012346', transactionId: '123456789012346', upiId: 'suraj987@ybl', amount: -15000, balance: 60000, type: 'debit', selected: false, notes: '', isSuspicious: false },
+                    { id: 3, originalId: 'd3', date: '2024-01-16', description: 'UPI/rahul123@okicici/IMPS/123456789012347', transactionId: '123456789012347', upiId: 'rahul123@okicici', amount: -30000, balance: 30000, type: 'debit', selected: false, notes: '', isSuspicious: false },
+                    { id: 4, originalId: 'd4', date: '2024-01-17', description: 'Salary Credit/ABC Corp', transactionId: 'SAL20240117001', upiId: '', amount: 100000, balance: 130000, type: 'credit', selected: false, notes: '', isSuspicious: false },
+                    { id: 5, originalId: 'd5', date: '2024-01-18', description: 'UPI/suraj987@ybl/IMPS/123456789012348', transactionId: '123456789012348', upiId: 'suraj987@ybl', amount: -20000, balance: 110000, type: 'debit', selected: false, notes: '', isSuspicious: false },
+                    { id: 6, originalId: 'd6', date: '2024-01-19', description: 'Fraud Transfer/scammer@ybl/IMPS/9999999', transactionId: '9999999', upiId: 'scammer@ybl', amount: -60000, balance: 50000, type: 'debit', selected: false, notes: '', isSuspicious: false }
+                ];
+                
+                UIManager.elements.uploadSection.classList.add('hidden');
+                UIManager.elements.summaryCards.classList.remove('hidden');
+                UIManager.elements.workspace.classList.remove('hidden');
+                UIManager.showNotification('Demo data loaded.', 'info');
+                this.filterData();
+            },
+
+            // ===== NEW FEATURES =====
+
+            toggleBatchMode() {
+                const batchToolbar = document.getElementById('batchToolbar');
+                batchToolbar.classList.toggle('hidden');
+                if (!batchToolbar.classList.contains('hidden')) {
+                    UIManager.showNotification('Batch mode: Click transactions to select multiple', 'info');
+                }
+            },
+
+            deleteSelected() {
+                const selected = UIManager.state.transactions.filter(t => t.selected);
+                if (selected.length === 0) {
+                    UIManager.showNotification('No transactions selected.', 'error');
+                    return;
+                }
+                if (confirm(`Delete ${selected.length} selected transactions?`)) {
+                    const selectedIds = new Set(selected.map(t => t.originalId));
+                    UIManager.state.transactions = UIManager.state.transactions.filter(t => !selectedIds.has(t.originalId));
+                    this.clearBatch();
+                    this.filterData();
+                    UIManager.showNotification(`Deleted ${selected.length} transactions.`, 'success');
+                }
+            },
+
+            tagSelected(tag) {
+                const selected = UIManager.state.transactions.filter(t => t.selected);
+                if (selected.length === 0) {
+                    UIManager.showNotification('No transactions selected.', 'error');
+                    return;
+                }
+                selected.forEach(t => t.tag = tag);
+                this.filterData();
+                UIManager.showNotification(`Tagged ${selected.length} transactions as ${tag}.`, 'success');
+            },
+
+            clearBatch() {
+                UIManager.state.transactions.forEach(t => t.selected = false);
+                document.getElementById('batchToolbar').classList.add('hidden');
+                this.filterData();
+            },
+
+            currentTransaction: null,
+
+            viewDetails() {
+                const selected = UIManager.state.transactions.filter(t => t.selected);
+                if (selected.length === 0) {
+                    UIManager.showNotification('Select a transaction to view details.', 'error');
+                    return;
+                }
+                if (selected.length > 1) {
+                    UIManager.showNotification('Select only one transaction to view details.', 'error');
+                    return;
+                }
+                this.currentTransaction = selected[0];
+                this.showTransactionModal(selected[0]);
+            },
+
+            showTransactionModal(txnOrId) {
+                let txn = txnOrId;
+                if (typeof txn === 'string') {
+                    txn = UIManager.state.transactions.find(t => t.originalId === txnOrId);
+                }
+                if (!txn) return;
+                
+                this.currentTransaction = txn;
+                const modal = document.getElementById('detailModal');
+                const body = document.getElementById('modalBody');
+                
+                const riskLevel = txn.isSuspicious ? '<span class="detail-value suspicious">[SUSPICIOUS]</span>' : '<span class="detail-value" style="color: #059669;">[Normal]</span>';
+                const reason = txn.suspicionReason ? `<tr><td class="detail-label">Reason</td><td class="detail-value suspicious">${txn.suspicionReason}</td></tr>` : '';
+                const tagDisplay = txn.tag ? `<span style="padding: 2px 8px; border-radius: 4px; font-size: 11px; background: ${txn.tag === 'fraud' ? '#fee2e2' : '#d1fae5'}; color: ${txn.tag === 'fraud' ? '#991b1b' : '#065f46'};">${txn.tag.toUpperCase()}</span>` : '<span style="color: var(--gray-500);">Not tagged</span>';
+
+                body.innerHTML = `
+                    <table style="width: 100%;">
+                        <tr><td class="detail-label">Date</td><td class="detail-value">${txn.date}</td></tr>
+                        <tr><td class="detail-label">Amount</td><td class="detail-value ${txn.type === 'debit' ? 'suspicious' : ''}" style="font-weight: 700; font-size: 16px;">${Utils.formatCurrency(txn.amount)} (${txn.type})</td></tr>
+                        <tr><td class="detail-label">Balance</td><td class="detail-value">${txn.balance ? Utils.formatCurrency(txn.balance) : 'N/A'}</td></tr>
+                        <tr><td class="detail-label">Type</td><td class="detail-value">${riskLevel}</td></tr>
+                        ${reason}
+                        <tr><td class="detail-label">Description</td><td class="detail-value">${Sanitizer.escapeHTML(txn.description)}</td></tr>
+                        <tr><td class="detail-label">Transaction ID</td><td class="detail-value">${txn.transactionId || 'Not found'}</td></tr>
+                        <tr><td class="detail-label">UPI ID</td><td class="detail-value">${txn.upiId || 'Not found'}</td></tr>
+                        <tr><td class="detail-label">Tag</td><td class="detail-value">${tagDisplay}</td></tr>
+                        <tr><td class="detail-label">Notes</td><td class="detail-value">${txn.notes || 'No notes'}</td></tr>
+                    </table>
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                        <label style="font-size: 12px; color: var(--gray-500); display: block; margin-bottom: 8px;">Add Tag</label>
+                        <select class="tag-select" onchange="App.updateTag(this.value)">
+                            <option value="">Select tag...</option>
+                            <option value="fraud">[Fraud] Mark as Fraud</option>
+                            <option value="legit">[Legit] Mark as Legitimate</option>
+                            <option value="pending">[Pending] Needs Review</option>
+                        </select>
+                    </div>
+                `;
+                
+                modal.classList.add('active');
+            },
+
+            updateTag(tag) {
+                if (this.currentTransaction && tag) {
+                    this.currentTransaction.tag = tag;
+                    UIManager.showNotification(`Transaction tagged as ${tag}`, 'success');
+                }
+            },
+
+            deleteCurrentTransaction() {
+                if (this.currentTransaction && confirm('Delete this transaction?')) {
+                    const id = this.currentTransaction.originalId;
+                    UIManager.state.transactions = UIManager.state.transactions.filter(t => t.originalId !== id);
+                    this.closeModal('detailModal');
+                    this.filterData();
+                    UIManager.showNotification('Transaction deleted.', 'success');
+                }
+            },
+
+            copyTransactionDetails() {
+                if (!this.currentTransaction) return;
+                const t = this.currentTransaction;
+                const text = `Date: ${t.date}\nAmount: ${Utils.formatCurrency(t.amount)}\nType: ${t.type}\nDescription: ${t.description}\nTransaction ID: ${t.transactionId || 'N/A'}\nUPI ID: ${t.upiId || 'N/A'}\nBalance: ${t.balance ? Utils.formatCurrency(t.balance) : 'N/A'}\nNotes: ${t.notes || 'N/A'}`;
+                
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        UIManager.showNotification('Transaction details copied!', 'success');
+                    });
+                }
+            },
+
+            closeModal(id) {
+                document.getElementById(id).classList.remove('active');
+            },
+
+            showTimeline() {
+                const { transactions } = UIManager.state;
+                if (transactions.length === 0) {
+                    UIManager.showNotification('No transactions to display.', 'error');
+                    return;
+                }
+
+                document.getElementById('timelineSection').classList.remove('hidden');
+                const timeline = document.getElementById('timeline');
+                
+                const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
+                
+                timeline.innerHTML = sorted.map(t => `
+                    <div class="timeline-item ${t.isSuspicious ? 'suspicious' : ''}" onclick="App.showTransactionModal('${t.originalId}')" style="cursor: pointer;">
+                        <div class="timeline-date">${Utils.formatDate(t.date)}</div>
+                        <div class="timeline-desc">${Sanitizer.escapeHTML(t.description.substring(0, 60))}${t.description.length > 60 ? '...' : ''}</div>
+                        <div class="timeline-amount ${t.type}">${Utils.formatCurrency(t.amount)}</div>
+                    </div>
+                `).join('');
+            },
+
+            showCharts() {
+                const { transactions } = UIManager.state;
+                if (transactions.length === 0) {
+                    UIManager.showNotification('No transactions to display.', 'error');
+                    return;
+                }
+
+                document.getElementById('chartsSection').classList.remove('hidden');
+                
+                // Daily chart
+                const dailyData = {};
+                transactions.forEach(t => {
+                    const date = t.date;
+                    if (!dailyData[date]) dailyData[date] = { count: 0, total: 0 };
+                    dailyData[date].count++;
+                    dailyData[date].total += Math.abs(t.amount);
+                });
+                
+                const sortedDates = Object.keys(dailyData).sort().slice(-7);
+                const maxTotal = Math.max(...sortedDates.map(d => dailyData[d].total));
+                
+                document.getElementById('dailyChart').innerHTML = sortedDates.map(date => {
+                    const data = dailyData[date];
+                    const percent = maxTotal > 0 ? (data.total / maxTotal) * 100 : 0;
+                    return `
+                        <div class="bar-row">
+                            <div class="bar-label">${Utils.formatDate(date)}</div>
+                            <div class="bar-track">
+                                <div class="bar-fill debit" style="width: ${percent}%"></div>
+                            </div>
+                            <div class="bar-value">${data.count}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Category chart
+                const categories = { 'UPI Transfer': 0, 'Bank Transfer': 0, 'ATM': 0, 'Other': 0 };
+                transactions.forEach(t => {
+                    const desc = t.description.toLowerCase();
+                    if (desc.includes('upi')) categories['UPI Transfer']++;
+                    else if (desc.includes('atm') || desc.includes('cash')) categories['ATM']++;
+                    else if (desc.includes('neft') || desc.includes('imps') || desc.includes('rtgs')) categories['Bank Transfer']++;
+                    else categories['Other']++;
+                });
+
+                const total = transactions.length;
+                const colors = { 'UPI Transfer': '#2563eb', 'Bank Transfer': '#10b981', 'ATM': '#f59e0b', 'Other': '#64748b' };
+                
+                document.getElementById('categoryLegend').innerHTML = Object.entries(categories)
+                    .filter(([_, count]) => count > 0)
+                    .map(([cat, count]) => `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: ${colors[cat]}"></div>
+                            <span>${cat}: ${count} (${Math.round(count/total*100)}%)</span>
+                        </div>
+                    `).join('');
+            },
+
+            saveProgress() {
+                try {
+                    const data = {
+                        transactions: UIManager.state.transactions,
+                        savedAt: new Date().toISOString()
+                    };
+                    localStorage.setItem('cyberCrimeAssistantData', JSON.stringify(data));
+                    this.showStorageIndicator('Saved', 'saved');
+                    UIManager.showNotification('Progress saved locally!', 'success');
+                } catch (e) {
+                    UIManager.showNotification('Failed to save: ' + e.message, 'error');
+                }
+            },
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('cyberCrimeAssistantData');
+                    if (!saved) {
+                        UIManager.showNotification('No saved progress found.', 'error');
+                        return;
+                    }
+                    const data = JSON.parse(saved);
+                    UIManager.state.transactions = data.transactions || [];
+                    UIManager.elements.uploadSection.classList.add('hidden');
+                    UIManager.elements.summaryCards.classList.remove('hidden');
+                    UIManager.elements.workspace.classList.remove('hidden');
+                    this.filterData();
+                    const date = data.savedAt ? new Date(data.savedAt).toLocaleString() : 'Unknown';
+                    UIManager.showNotification(`Loaded ${UIManager.state.transactions.length} transactions from ${date}`, 'success');
+                } catch (e) {
+                    UIManager.showNotification('Failed to load: ' + e.message, 'error');
+                }
+            },
+
+            showStorageIndicator(text, status) {
+                const indicator = document.getElementById('storageIndicator');
+                const dot = indicator.querySelector('.storage-dot');
+                document.getElementById('storageStatus').textContent = text;
+                dot.className = `storage-dot ${status}`;
+                indicator.classList.add('active');
+                setTimeout(() => indicator.classList.remove('active'), 2000);
+            },
+
+            updateQuickStats() {
+                const { transactions } = UIManager.state;
+                if (transactions.length === 0) return;
+                
+                const total = transactions.length;
+                const totalAmt = transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const avg = total > 0 ? totalAmt / total : 0;
+                
+                const uniqueDays = new Set(transactions.map(t => t.date)).size;
+                const largestDebit = Math.max(...transactions.filter(t => t.type === 'debit').map(t => Math.abs(t.amount)), 0);
+                const upiCount = transactions.filter(t => t.upiId).length;
+                
+                document.getElementById('avgTransaction').textContent = Utils.formatCurrency(avg);
+                document.getElementById('activeDays').textContent = uniqueDays;
+                document.getElementById('largestDebit').textContent = Utils.formatCurrency(largestDebit);
+                document.getElementById('upiCount').textContent = upiCount;
+            }
+        };
+
+        // Auto-save every 30 seconds
+        setInterval(() => {
+            if (UIManager.state.transactions.length > 0) {
+                try {
+                    const data = { transactions: UIManager.state.transactions, savedAt: new Date().toISOString() };
+                    localStorage.setItem('cyberCrimeAssistantData', JSON.stringify(data));
+                } catch (e) {}
+            }
+        }, 30000);
+
+        // Initialize App on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if required libraries are loaded
+            if (typeof Papa === 'undefined' || typeof XLSX === 'undefined' || typeof pdfjsLib === 'undefined') {
+                UIManager.showNotification('Some external libraries failed to load. Please check your internet connection and refresh the page.', 'error');
+                return;
+            }
+            UIManager.init();
+        });
+
+    </script>
+</body>
+</html>
