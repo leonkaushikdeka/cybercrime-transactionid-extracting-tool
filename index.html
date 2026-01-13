@@ -553,11 +553,10 @@
             padding: 24px;
             box-shadow: var(--shadow);
             margin-bottom: 24px;
-            display: none;
         }
 
         .charts-title {
-            font-size: 14px; font-weight: 600; color: var(--gray-700);
+            font-size: 16px; font-weight: 600; color: var(--gray-800);
             margin-bottom: 20px;
         }
 
@@ -567,6 +566,12 @@
         }
 
         .chart-box {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .chart-container {
             background: var(--gray-50);
             border-radius: var(--radius-md);
             padding: 20px;
@@ -586,7 +591,6 @@
             padding: 24px;
             box-shadow: var(--shadow);
             margin-bottom: 24px;
-            display: none;
         }
 
         .timeline {
@@ -627,6 +631,22 @@
 
         .timeline-amount.debit { color: var(--danger); }
         .timeline-amount.credit { color: var(--success); }
+
+        /* --- Bar Chart --- */
+        .bar-chart { display: flex; flex-direction: column; gap: 12px; }
+        .bar-row { display: flex; align-items: center; gap: 12px; }
+        .bar-label { width: 80px; font-size: 12px; color: var(--gray-600); text-align: right; flex-shrink: 0; }
+        .bar-track { flex: 1; height: 24px; background: var(--gray-100); border-radius: var(--radius); overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: var(--radius); transition: width 0.5s ease; }
+        .bar-fill.debit { background: linear-gradient(90deg, var(--danger-light), var(--danger)); }
+        .bar-fill.credit { background: linear-gradient(90deg, var(--success-light), var(--success)); }
+        .bar-value { width: 40px; font-size: 12px; font-weight: 600; color: var(--gray-700); }
+
+        /* --- Pie Chart Legend --- */
+        .pie-chart { display: flex; flex-direction: column; gap: 12px; }
+        .pie-legend { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-700); }
+        .legend-color { width: 14px; height: 14px; border-radius: var(--radius-sm); flex-shrink: 0; }
 
         /* --- Help Section --- */
         .help-panel {
