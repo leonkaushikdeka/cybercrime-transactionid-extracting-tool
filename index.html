@@ -6,24 +6,30 @@
     <meta name="description" content="Free, privacy-first bank statement analyzer for cyber crime evidence. Extracts transaction IDs, detects fraud patterns, and generates reports for cybercrime.gov.in complaints.">
     <meta name="keywords" content="cyber crime, bank statement analyzer, fraud detection, UPI fraud, transaction ID extractor, cybercrime.gov.in, evidence report, FIR">
     <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a56db'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230c2d57'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <title>Cyber Crime Evidence Tool - Bank Statement Analyzer & Report Generator</title>
     <style>
-        /* --- Professional Color System --- */
+        /* --- Authoritative Color System (Navy + Gold) --- */
         :root {
-            --primary: #1a56db;
-            --primary-dark: #1e40af;
-            --primary-light: #3b82f6;
+            --primary: #0c2d57;
+            --primary-dark: #091e3a;
+            --primary-light: #1a4a8a;
+            --accent: #c8a84e;
+            --accent-light: #e0c878;
+            --accent-dark: #a68a3a;
             --success: #059669;
             --success-light: #10b981;
             --danger: #dc2626;
             --danger-light: #ef4444;
             --warning: #d97706;
             --warning-light: #f59e0b;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
+            --gray-50: #f8f9fb;
+            --gray-100: #f1f3f5;
+            --gray-200: #e2e5ea;
+            --gray-300: #cdd2d9;
             --gray-400: #9ca3af;
             --gray-500: #6b7280;
             --gray-600: #4b5563;
@@ -31,95 +37,144 @@
             --gray-800: #1f2937;
             --gray-900: #111827;
             --white: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+            --shadow-glow: 0 0 0 3px rgba(12, 45, 87, 0.12);
             --radius-sm: 4px;
-            --radius: 6px;
-            --radius-md: 8px;
-            --radius-lg: 10px;
-            --radius-xl: 12px;
+            --radius: 8px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 16px;
+            --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--gray-100);
+            background: #eef1f5;
             color: var(--gray-800);
-            line-height: 1.5;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+        .container { max-width: 1360px; margin: 0 auto; padding: 28px 32px; }
         .hidden { display: none !important; }
 
-        /* --- Header --- */
+        /* --- Entrance Animations --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-critical {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* --- Header (Dark Navy + Gold Stripe) --- */
         header {
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            padding: 20px 0;
-            margin-bottom: 24px;
+            background: linear-gradient(135deg, #0c2d57 0%, #091e3a 100%);
+            border-bottom: 3px solid var(--accent);
+            padding: 0;
+            position: sticky; top: 0; z-index: 50;
         }
 
-        .header-inner { display: flex; align-items: center; justify-content: space-between; }
-        
-        .logo-section { display: flex; align-items: center; gap: 16px; }
-        
+        .header-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 32px; max-width: 1360px; margin: 0 auto;
+        }
+
+        .logo-section { display: flex; align-items: center; gap: 14px; }
+
         .logo-icon {
-            width: 44px; height: 44px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: var(--radius-md);
+            width: 42px; height: 42px;
+            background: var(--accent);
+            border-radius: var(--radius);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 2px 8px rgba(200, 168, 78, 0.3);
         }
 
-        .logo-icon svg { width: 24px; height: 24px; fill: var(--white); }
+        .logo-icon svg { width: 22px; height: 22px; fill: var(--primary-dark); }
 
         .header-text h1 {
-            font-size: 20px; font-weight: 700; color: var(--gray-900);
-            letter-spacing: -0.025em;
+            font-size: 17px; font-weight: 700; color: #ffffff;
+            letter-spacing: 0.01em;
         }
 
         .header-text p {
-            font-size: 13px; color: var(--gray-500); margin-top: 2px;
+            font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-top: 1px;
         }
 
-        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+
+        .header-actions .btn {
+            border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.08); font-size: 12px; padding: 7px 14px;
+        }
+        .header-actions .btn:hover {
+            background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.35);
+        }
+        .header-actions .btn-primary {
+            background: var(--accent); color: var(--primary-dark);
+            border-color: var(--accent); font-weight: 600;
+        }
+        .header-actions .btn-primary:hover {
+            background: var(--accent-light); border-color: var(--accent-light);
+        }
 
         /* --- Buttons --- */
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
-            gap: 8px;
-            padding: 10px 18px;
-            font-size: 14px; font-weight: 500;
+            gap: 7px;
+            padding: 9px 16px;
+            font-size: 13px; font-weight: 600;
             border-radius: var(--radius);
-            border: 1px solid var(--gray-300);
+            border: 1.5px solid var(--gray-300);
             background: var(--white);
             color: var(--gray-700);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all var(--transition-base);
             white-space: nowrap;
+            letter-spacing: 0.01em;
         }
 
-        .btn:hover { background: var(--gray-50); border-color: var(--gray-400); }
-        .btn:active { transform: scale(0.98); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .btn:hover { background: var(--gray-50); border-color: var(--gray-400); box-shadow: var(--shadow-sm); }
+        .btn:active { transform: scale(0.97); }
+        .btn:focus-visible { outline: none; box-shadow: var(--shadow-glow); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .btn svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
 
         .btn-primary {
             background: var(--primary); border-color: var(--primary);
             color: var(--white);
         }
-        .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+        .btn-primary:hover { background: var(--primary-light); border-color: var(--primary-light); box-shadow: 0 2px 8px rgba(12,45,87,0.25); }
 
         .btn-success {
             background: var(--success); border-color: var(--success);
             color: var(--white);
         }
-        .btn-success:hover { background: #047857; border-color: #047857; }
+        .btn-success:hover { background: #047857; border-color: #047857; box-shadow: 0 2px 8px rgba(5,150,105,0.25); }
 
         .btn-danger {
             background: var(--danger); border-color: var(--danger);
@@ -127,46 +182,61 @@
         }
         .btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
 
-        .btn-sm { padding: 6px 12px; font-size: 13px; }
+        .btn-outline-primary {
+            background: transparent; border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline-primary:hover { background: var(--primary); color: var(--white); }
+
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
         .btn-icon { padding: 8px; }
 
         /* --- Upload Section --- */
         .upload-area {
             background: var(--white);
-            border: 2px dashed var(--gray-300);
+            border: 2.5px dashed var(--gray-300);
             border-radius: var(--radius-lg);
-            padding: 48px;
+            padding: 56px 48px;
             text-align: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.5s var(--transition-base) both;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-light);
+            background: #f6f8fc;
         }
 
         .upload-area.dragover {
             border-color: var(--primary);
-            background: #eff6ff;
+            background: #edf2fa;
+            transform: scale(1.01);
+            box-shadow: 0 0 0 4px rgba(12, 45, 87, 0.08);
         }
 
         .upload-icon {
-            width: 64px; height: 64px;
-            margin: 0 auto 20px;
-            background: var(--gray-100);
+            width: 76px; height: 76px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #e8f0fe, #d6e4f9);
+            border: 2px solid #c0d4ee;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
         }
 
-        .upload-icon svg { width: 32px; height: 32px; fill: var(--gray-400); }
+        .upload-icon svg { width: 34px; height: 34px; fill: var(--primary-light); }
 
         .upload-area h2 {
-            font-size: 18px; font-weight: 600; color: var(--gray-900);
+            font-size: 19px; font-weight: 700; color: var(--gray-900);
             margin-bottom: 8px;
         }
 
         .upload-area p {
-            font-size: 14px; color: var(--gray-500); margin-bottom: 20px;
+            font-size: 14px; color: var(--gray-500); margin-bottom: 24px;
         }
 
         .upload-area .file-types {
             font-size: 12px; color: var(--gray-400);
-            margin-top: 16px;
+            margin-top: 20px;
         }
 
         /* --- Progress Section --- */
@@ -210,28 +280,38 @@
         }
 
         .progress-fill {
-            height: 100%; background: var(--primary);
+            height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light));
             border-radius: 3px; transition: width 0.3s ease;
         }
 
         /* --- Stats Grid --- */
         .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px; margin-bottom: 24px;
+            animation: fadeInUp 0.4s var(--transition-base) both;
         }
 
         .stat-card {
             background: var(--white);
             border-radius: var(--radius-md);
-            padding: 20px;
+            padding: 22px;
             box-shadow: var(--shadow);
             border-left: 4px solid var(--gray-300);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
         }
+
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
         .stat-card.primary { border-left-color: var(--primary); }
         .stat-card.success { border-left-color: var(--success); }
         .stat-card.danger { border-left-color: var(--danger); }
         .stat-card.warning { border-left-color: var(--warning); }
+
+        .stat-card h3 {
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--gray-500); margin-bottom: 8px;
+        }
 
         .stat-label {
             font-size: 11px; font-weight: 600;
@@ -240,18 +320,18 @@
         }
 
         .stat-value {
-            font-size: 22px; font-weight: 700;
-            color: var(--gray-900);
+            font-size: 26px; font-weight: 800;
+            color: var(--gray-900); letter-spacing: -0.02em;
         }
 
         .summary-value {
-            font-size: 22px; font-weight: 700;
-            color: var(--gray-900);
+            font-size: 26px; font-weight: 800;
+            color: var(--gray-900); letter-spacing: -0.02em;
         }
 
         /* --- Quick Stats --- */
         .quick-stats {
-            display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+            display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px;
         }
 
         .quick-stat {
@@ -262,7 +342,11 @@
             box-shadow: var(--shadow);
             flex: 1;
             min-width: 180px;
+            border: 1px solid var(--gray-200);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
         }
+
+        .quick-stat:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
         .quick-stat svg {
             flex-shrink: 0;
@@ -289,6 +373,8 @@
             box-shadow: var(--shadow);
             margin-bottom: 24px;
             display: none;
+            border: 1px solid var(--gray-200);
+            animation: fadeInUp 0.4s var(--transition-base) both;
         }
 
         .risk-header {
@@ -348,23 +434,30 @@
         }
 
         .risk-total {
-            text-align: center; padding: 12px; background: var(--gray-50);
-            border-radius: var(--radius); font-size: 14px; font-weight: 600; color: var(--gray-700);
+            text-align: center; padding: 20px;
+            background: linear-gradient(135deg, #0c2d57, #1a4a8a);
+            border-radius: var(--radius-md); font-size: 20px; font-weight: 800;
+            color: #ffffff; letter-spacing: -0.01em;
+            box-shadow: 0 4px 12px rgba(12, 45, 87, 0.3);
         }
 
         /* --- Risk Indicator Column --- */
         .risk-indicator {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: 4px 10px; border-radius: var(--radius);
-            font-size: 12px; font-weight: 600; cursor: help;
+            padding: 5px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; cursor: help;
+            transition: all var(--transition-base);
         }
 
-        .risk-indicator.critical { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .risk-indicator.high { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-        .risk-indicator.medium { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
-        .risk-indicator.low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .risk-indicator.critical {
+            background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca;
+            animation: pulse-critical 2s ease-in-out infinite;
+        }
+        .risk-indicator.high { background: #fff7ed; color: #ea580c; border: 1.5px solid #fed7aa; }
+        .risk-indicator.medium { background: #fefce8; color: #ca8a04; border: 1.5px solid #fef08a; }
+        .risk-indicator.low { background: #f0fdf4; color: #16a34a; border: 1.5px solid #bbf7d0; }
 
-        .risk-score-num { font-size: 14px; }
+        .risk-score-num { font-size: 13px; }
 
         /* --- Tooltip --- */
         .tooltip {
@@ -404,14 +497,20 @@
         .toolbar {
             background: var(--white);
             border-radius: var(--radius-lg);
-            padding: 16px 20px;
+            padding: 14px 20px;
             box-shadow: var(--shadow);
             margin-bottom: 20px;
             display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: 16px;
+            flex-wrap: wrap; gap: 12px;
+            border: 1px solid var(--gray-200);
         }
 
-        .toolbar-group, .filter-group, .action-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .toolbar-group, .filter-group, .action-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .toolbar-divider {
+            width: 1px; height: 28px;
+            background: var(--gray-200); margin: 0 4px; flex-shrink: 0;
+        }
 
         .search-input {
             width: 280px; padding: 10px 14px;
@@ -473,50 +572,52 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             overflow: hidden;
+            border: 1px solid var(--gray-200);
         }
 
         .table-scroll {
-            overflow-x: auto; max-height: 600px; overflow-y: auto;
+            overflow-x: auto; max-height: 620px; overflow-y: auto;
         }
 
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
 
         thead {
             position: sticky; top: 0;
-            background: var(--gray-50);
+            background: var(--primary-dark);
             z-index: 10;
         }
 
         th {
-            text-align: left; padding: 14px 16px;
-            font-size: 12px; font-weight: 600;
-            color: var(--gray-600);
-            text-transform: uppercase; letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--gray-200);
+            text-align: left; padding: 12px 16px;
+            font-size: 11px; font-weight: 600;
+            color: rgba(255,255,255,0.85);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            border-bottom: 2px solid var(--accent);
             white-space: nowrap;
         }
 
         th.sortable {
             cursor: pointer; user-select: none;
-            transition: background 0.15s ease;
+            transition: background var(--transition-base);
         }
 
-        th.sortable:hover { background: var(--gray-100); }
+        th.sortable:hover { background: rgba(255,255,255,0.08); }
 
         td {
-            padding: 14px 16px;
-            font-size: 14px; color: var(--gray-700);
+            padding: 11px 16px;
+            font-size: 13px; color: var(--gray-700);
             border-bottom: 1px solid var(--gray-100);
             vertical-align: middle;
         }
 
         tbody tr {
-            transition: background 0.1s ease;
+            transition: background var(--transition-base);
         }
 
-        tbody tr:hover { background: var(--gray-50); }
+        tbody tr:nth-child(even) { background: var(--gray-50); }
+        tbody tr:hover { background: #e8f0fe; }
 
-        tbody tr.suspicious { background: #fef2f2; }
+        tbody tr.suspicious { background: #fef2f2; border-left: 3px solid var(--danger); }
         tbody tr.suspicious:hover { background: #fee2e2; }
 
         .amount-debit { color: var(--danger); font-weight: 600; }
@@ -678,45 +779,64 @@
         .legend-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-700); }
         .legend-color { width: 14px; height: 14px; border-radius: var(--radius-sm); flex-shrink: 0; }
 
-        /* --- Help Section --- */
+        /* --- Help Section (Collapsible) --- */
         .help-panel {
             background: var(--white);
             border-radius: var(--radius-lg);
-            padding: 24px;
             box-shadow: var(--shadow);
-            margin-top: 32px;
-            border-left: 4px solid var(--warning);
+            margin-top: 28px;
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
         }
 
-        .help-panel h3 {
-            font-size: 16px; font-weight: 600; color: var(--gray-900);
-            margin-bottom: 16px;
+        .help-panel summary {
+            padding: 18px 24px;
+            font-size: 15px; font-weight: 700; color: var(--gray-900);
+            cursor: pointer; list-style: none;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: background var(--transition-base);
+            border-left: 4px solid var(--accent);
         }
 
-        .help-panel p {
+        .help-panel summary::-webkit-details-marker { display: none; }
+
+        .help-panel summary::after {
+            content: '+'; font-size: 20px; font-weight: 400;
+            color: var(--gray-400); transition: transform 0.3s ease;
+        }
+
+        .help-panel[open] summary::after { content: '-'; }
+        .help-panel summary:hover { background: var(--gray-50); }
+
+        .help-content {
+            padding: 0 24px 24px 28px;
+        }
+
+        .help-content p {
             font-size: 14px; color: var(--gray-600); margin-bottom: 12px;
         }
 
-        .help-panel ul {
+        .help-content ul {
             list-style: none; padding: 0;
         }
 
-        .help-panel li {
+        .help-content li {
             font-size: 14px; color: var(--gray-600);
-            padding: 6px 0; padding-left: 20px; position: relative;
+            padding: 8px 0; padding-left: 20px; position: relative;
         }
 
-        .help-panel li::before {
-            content: ''; position: absolute; left: 0; top: 12px;
+        .help-content li::before {
+            content: ''; position: absolute; left: 0; top: 14px;
             width: 6px; height: 6px;
-            background: var(--warning);
+            background: var(--accent);
             border-radius: 50%;
         }
 
         .privacy-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #dbeafe; color: #1e40af;
-            padding: 6px 14px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #e8f0fe, #dbeafe);
+            color: var(--primary); border: 1px solid #c0d4ee;
+            padding: 8px 16px; border-radius: 24px;
             font-size: 12px; font-weight: 600;
             margin-top: 16px;
         }
@@ -729,12 +849,27 @@
             padding: 14px 18px;
             background: var(--white);
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 8px 24px -4px rgba(0,0,0,0.15);
             margin-bottom: 10px;
-            font-size: 14px; font-weight: 500;
+            font-size: 13px; font-weight: 500;
             animation: slideIn 0.3s ease;
-            min-width: 300px;
+            min-width: 320px;
+            position: relative; overflow: hidden;
         }
+
+        .toast::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            height: 3px; width: 100%;
+            background: var(--gray-300);
+            animation: toast-progress 4s linear forwards;
+        }
+
+        .toast.success::after { background: var(--success); }
+        .toast.error::after { background: var(--danger); }
+        .toast.warning::after { background: var(--warning); }
+        .toast.info::after { background: var(--primary); }
+
+        @keyframes toast-progress { from { width: 100%; } to { width: 0; } }
 
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -754,40 +889,43 @@
         /* --- Modal --- */
         .modal-backdrop {
             position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(9, 30, 58, 0.45);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             display: none; align-items: center; justify-content: center;
             z-index: 1000;
         }
 
-        .modal-backdrop.active { display: flex; }
+        .modal-backdrop.active { display: flex; animation: fadeIn 0.2s ease; }
 
         .modal {
             background: var(--white);
-            border-radius: var(--radius-lg);
-            max-width: 560px; width: 90%; max-height: 85vh;
+            border-radius: var(--radius-xl);
+            max-width: 580px; width: 92%; max-height: 85vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 24px 48px -12px rgba(0,0,0,0.25);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .modal-header {
             padding: 20px 24px;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 2px solid var(--gray-200);
             display: flex; align-items: center; justify-content: space-between;
         }
 
         .modal-title {
-            font-size: 17px; font-weight: 600; color: var(--gray-900);
+            font-size: 17px; font-weight: 700; color: var(--gray-900);
         }
 
         .modal-close {
             width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
-            border: none; background: none;
-            font-size: 24px; color: var(--gray-400);
-            cursor: pointer; border-radius: var(--radius);
+            border: none; background: var(--gray-100);
+            font-size: 20px; color: var(--gray-500);
+            cursor: pointer; border-radius: 50%;
+            transition: all var(--transition-base);
         }
 
-        .modal-close:hover { background: var(--gray-100); color: var(--gray-600); }
+        .modal-close:hover { background: var(--gray-200); color: var(--gray-700); }
 
         .modal-body { padding: 24px; }
 
@@ -840,106 +978,165 @@
         }
 
         /* --- Responsive --- */
+        @media (max-width: 1200px) {
+            .risk-summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .case-form-grid { grid-template-columns: repeat(2, 1fr); }
+            .action-group .btn-label { display: none; }
+            .action-group .btn { padding: 8px 10px; }
+            .toolbar-divider { display: none; }
+        }
+
         @media (max-width: 768px) {
             .container { padding: 16px; }
-            .toolbar { flex-direction: column; align-items: stretch; }
+            .header-inner { padding: 12px 16px; }
+            .header-text h1 { font-size: 14px; }
+            .header-text p { display: none; }
+            .toolbar { flex-direction: column; align-items: stretch; padding: 12px; }
             .toolbar-group, .filter-group, .action-group { width: 100%; }
             .search-input, .toolbar input[type="text"] { width: 100%; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .charts-grid { grid-template-columns: 1fr; }
-            .step-wizard { gap: 8px; }
+            .step-wizard { gap: 4px; padding: 14px 12px; }
             .step-item .step-label { display: none; }
+            .step-connector { min-width: 16px; }
             .case-form-grid { grid-template-columns: 1fr; }
+            .case-section { padding: 20px 16px; }
+            .quick-stats { gap: 10px; }
+            .quick-stat { min-width: 140px; padding: 12px 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 12px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .risk-summary-grid { grid-template-columns: 1fr; }
+            .quick-stats { flex-direction: column; }
+            .upload-area { padding: 36px 16px; }
+            .upload-area h2 { font-size: 16px; }
         }
 
         /* --- Step Wizard --- */
         .step-wizard {
             display: flex; align-items: center; justify-content: center;
-            gap: 16px; margin-bottom: 32px;
-            padding: 20px; background: var(--white);
+            gap: 0; margin-bottom: 28px;
+            padding: 20px 28px; background: var(--white);
             border-radius: var(--radius-lg); box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            animation: fadeInUp 0.3s var(--transition-base) both;
         }
 
         .step-item {
             display: flex; align-items: center; gap: 10px;
-            cursor: pointer; opacity: 0.4; transition: opacity 0.2s;
+            cursor: default; opacity: 0.35;
+            transition: opacity 0.3s ease;
         }
 
         .step-item.active { opacity: 1; }
-        .step-item.completed { opacity: 0.8; }
+        .step-item.completed { opacity: 0.75; }
 
         .step-number {
-            width: 36px; height: 36px;
+            width: 40px; height: 40px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%; font-size: 14px; font-weight: 700;
-            background: var(--gray-200); color: var(--gray-600);
-            transition: all 0.2s;
+            background: var(--gray-100); color: var(--gray-500);
+            border: 2.5px solid var(--gray-300);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
         }
 
         .step-item.active .step-number {
             background: var(--primary); color: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(12, 45, 87, 0.15);
         }
 
         .step-item.completed .step-number {
             background: var(--success); color: var(--white);
+            border-color: var(--success);
         }
 
-        .step-label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
-        .step-connector { width: 40px; height: 2px; background: var(--gray-200); }
-        .step-connector.completed { background: var(--success); }
+        .step-label { font-size: 13px; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+
+        .step-connector {
+            flex: 1; min-width: 24px; max-width: 80px;
+            height: 3px; background: var(--gray-200);
+            border-radius: 2px; margin: 0 8px;
+            transition: background 0.3s ease;
+        }
+
+        .step-connector.completed {
+            background: linear-gradient(90deg, var(--success), var(--success-light));
+        }
 
         /* --- Case Details Form --- */
         .case-section {
             background: var(--white);
             border-radius: var(--radius-lg);
-            padding: 28px; box-shadow: var(--shadow);
+            padding: 32px; box-shadow: var(--shadow);
             margin-bottom: 24px;
             border-top: 4px solid var(--primary);
+            animation: fadeInUp 0.4s var(--transition-base) both;
         }
 
         .case-section h2 {
-            font-size: 18px; font-weight: 700; color: var(--gray-900);
+            font-size: 19px; font-weight: 700; color: var(--gray-900);
             margin-bottom: 4px;
         }
 
         .case-section .case-subtitle {
-            font-size: 13px; color: var(--gray-500); margin-bottom: 20px;
+            font-size: 13px; color: var(--gray-500); margin-bottom: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 28px; padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .form-section-title {
+            font-size: 12px; font-weight: 700; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+        }
+
+        .form-section-title::before {
+            content: ''; width: 3px; height: 16px;
+            background: var(--accent); border-radius: 2px; flex-shrink: 0;
         }
 
         .case-form-grid {
             display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 18px;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; }
 
         .form-group label {
-            font-size: 12px; font-weight: 600; color: var(--gray-600);
-            text-transform: uppercase; letter-spacing: 0.3px;
+            font-size: 11.5px; font-weight: 600; color: var(--gray-600);
+            text-transform: uppercase; letter-spacing: 0.4px;
         }
 
         .form-group label .hindi {
             font-weight: 400; color: var(--gray-400); text-transform: none;
-            letter-spacing: 0; font-size: 11px;
+            letter-spacing: 0; font-size: 10.5px;
         }
 
         .form-input {
-            padding: 10px 14px;
-            border: 1px solid var(--gray-300);
+            padding: 11px 14px;
+            border: 1.5px solid var(--gray-300);
             border-radius: var(--radius);
             font-size: 14px; background: var(--gray-50);
-            transition: all 0.15s ease;
+            transition: border-color var(--transition-base), box-shadow var(--transition-base), background var(--transition-base);
         }
 
         .form-input:focus {
             outline: none; border-color: var(--primary);
-            background: var(--white); box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+            background: var(--white); box-shadow: 0 0 0 3px rgba(12, 45, 87, 0.1);
         }
 
         .form-group.full-width { grid-column: 1 / -1; }
 
         .form-input.textarea {
-            min-height: 80px; resize: vertical; font-family: inherit;
+            min-height: 90px; resize: vertical; font-family: inherit;
         }
 
         /* --- File Hash --- */
@@ -965,10 +1162,19 @@
 
         .report-content {
             font-size: 13px; color: var(--gray-800); line-height: 1.7;
+            border: 1px solid var(--gray-200); padding: 32px;
+            background: #fefefe; position: relative;
+        }
+
+        .report-content::before {
+            content: 'EVIDENCE'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 72px; font-weight: 900; color: rgba(0,0,0,0.025);
+            pointer-events: none; white-space: nowrap; letter-spacing: 8px;
         }
 
         .report-header-block {
-            text-align: center; padding: 24px 0; border-bottom: 3px double var(--gray-300);
+            text-align: center; padding: 24px 0; border-bottom: 3px double var(--primary);
             margin-bottom: 20px;
         }
 
@@ -1026,12 +1232,13 @@
 
         /* --- Legal Disclaimer --- */
         .legal-disclaimer {
-            background: #fefce8; border: 1px solid #fef08a;
-            border-radius: var(--radius-md); padding: 16px 20px;
-            margin-bottom: 24px; font-size: 12px; color: #854d0e;
+            background: var(--gray-50); border: 1px solid var(--gray-200);
+            border-radius: var(--radius); padding: 12px 20px;
+            margin-bottom: 24px; font-size: 11.5px; color: var(--gray-500);
+            line-height: 1.6;
         }
 
-        .legal-disclaimer strong { color: #713f12; }
+        .legal-disclaimer strong { color: var(--gray-700); }
 
         /* --- Print Styles --- */
         @media print {
@@ -1123,46 +1330,64 @@
         <div class="case-section" id="caseDetailsSection">
             <h2>Case & Complainant Details</h2>
             <p class="case-subtitle">Fill in case information. This will appear on the evidence report. / मामले की जानकारी भरें।</p>
-            <div class="case-form-grid">
-                <div class="form-group">
-                    <label>Complainant Name <span class="hindi">(शिकायतकर्ता का नाम)</span></label>
-                    <input type="text" class="form-input" id="caseComplainantName" placeholder="Full name as per ID">
+            <div class="form-section">
+                <div class="form-section-title">Complainant Information</div>
+                <div class="case-form-grid">
+                    <div class="form-group">
+                        <label>Complainant Name <span class="hindi">(शिकायतकर्ता का नाम)</span></label>
+                        <input type="text" class="form-input" id="caseComplainantName" placeholder="Full name as per ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number <span class="hindi">(फोन नंबर)</span></label>
+                        <input type="tel" class="form-input" id="casePhone" placeholder="+91 XXXXX XXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Email <span class="hindi">(ईमेल)</span></label>
+                        <input type="email" class="form-input" id="caseEmail" placeholder="email@example.com">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Phone Number <span class="hindi">(फोन नंबर)</span></label>
-                    <input type="tel" class="form-input" id="casePhone" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-section">
+                <div class="form-section-title">Case Details</div>
+                <div class="case-form-grid">
+                    <div class="form-group">
+                        <label>FIR / Complaint Number <span class="hindi">(एफआईआर / शिकायत संख्या)</span></label>
+                        <input type="text" class="form-input" id="caseFIR" placeholder="If already filed">
+                    </div>
+                    <div class="form-group">
+                        <label>Police Station <span class="hindi">(थाना)</span></label>
+                        <input type="text" class="form-input" id="casePoliceStation" placeholder="Nearest police station">
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Incident <span class="hindi">(घटना की तारीख)</span></label>
+                        <input type="date" class="form-input" id="caseIncidentDate">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Email <span class="hindi">(ईमेल)</span></label>
-                    <input type="email" class="form-input" id="caseEmail" placeholder="email@example.com">
+            </div>
+            <div class="form-section">
+                <div class="form-section-title">Bank Details</div>
+                <div class="case-form-grid">
+                    <div class="form-group">
+                        <label>Bank Name <span class="hindi">(बैंक का नाम)</span></label>
+                        <input type="text" class="form-input" id="caseBankName" placeholder="e.g., State Bank of India">
+                    </div>
+                    <div class="form-group">
+                        <label>Account Number <span class="hindi">(खाता संख्या)</span></label>
+                        <input type="text" class="form-input" id="caseAccountNumber" placeholder="Bank account number">
+                    </div>
+                    <div class="form-group">
+                        <label>IFSC Code <span class="hindi">(आईएफएससी कोड)</span></label>
+                        <input type="text" class="form-input" id="caseIFSC" placeholder="e.g., SBIN0001234">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>FIR / Complaint Number <span class="hindi">(एफआईआर / शिकायत संख्या)</span></label>
-                    <input type="text" class="form-input" id="caseFIR" placeholder="If already filed">
-                </div>
-                <div class="form-group">
-                    <label>Police Station <span class="hindi">(थाना)</span></label>
-                    <input type="text" class="form-input" id="casePoliceStation" placeholder="Nearest police station">
-                </div>
-                <div class="form-group">
-                    <label>Date of Incident <span class="hindi">(घटना की तारीख)</span></label>
-                    <input type="date" class="form-input" id="caseIncidentDate">
-                </div>
-                <div class="form-group">
-                    <label>Bank Name <span class="hindi">(बैंक का नाम)</span></label>
-                    <input type="text" class="form-input" id="caseBankName" placeholder="e.g., State Bank of India">
-                </div>
-                <div class="form-group">
-                    <label>Account Number <span class="hindi">(खाता संख्या)</span></label>
-                    <input type="text" class="form-input" id="caseAccountNumber" placeholder="Bank account number">
-                </div>
-                <div class="form-group">
-                    <label>IFSC Code <span class="hindi">(आईएफएससी कोड)</span></label>
-                    <input type="text" class="form-input" id="caseIFSC" placeholder="e.g., SBIN0001234">
-                </div>
-                <div class="form-group full-width">
-                    <label>Brief Description of Fraud <span class="hindi">(धोखाधड़ी का संक्षिप्त विवरण)</span></label>
-                    <textarea class="form-input textarea" id="caseFraudDescription" placeholder="Describe how the fraud happened, what communication was received, how money was transferred..."></textarea>
+            </div>
+            <div class="form-section">
+                <div class="form-section-title">Incident Description</div>
+                <div class="case-form-grid">
+                    <div class="form-group full-width">
+                        <label>Brief Description of Fraud <span class="hindi">(धोखाधड़ी का संक्षिप्त विवरण)</span></label>
+                        <textarea class="form-input textarea" id="caseFraudDescription" placeholder="Describe how the fraud happened, what communication was received, how money was transferred..."></textarea>
+                    </div>
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 12px;">
@@ -1383,42 +1608,46 @@
                         <option value="suspicious">Flagged Transactions</option>
                     </select>
                 </div>
+                <div class="toolbar-divider"></div>
                 <div class="action-group">
                     <button class="btn btn-primary" onclick="App.runRiskAnalysis()" title="Analyze all transactions for fraud patterns">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h-2V7h4v10z"/></svg>
-                        Analyze Risk
+                        <span class="btn-label">Analyze Risk</span>
                     </button>
                     <button class="btn" onclick="App.toggleBatchMode()" title="Select multiple transactions">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                        Batch Select
+                        <span class="btn-label">Batch</span>
                     </button>
                     <button class="btn" onclick="App.showTimeline()" title="View transaction timeline">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
-                        Timeline
+                        <span class="btn-label">Timeline</span>
                     </button>
                     <button class="btn" onclick="App.showCharts()" title="View analytics charts">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
-                        Charts
+                        <span class="btn-label">Charts</span>
                     </button>
                     <button class="btn" onclick="App.viewDetails()" title="View transaction details">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                        Details
+                        <span class="btn-label">Details</span>
                     </button>
+                </div>
+                <div class="toolbar-divider"></div>
+                <div class="action-group">
                     <button class="btn" onclick="App.saveProgress()" title="Save progress locally">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-                        Save
+                        <span class="btn-label">Save</span>
                     </button>
                     <button class="btn" onclick="App.loadProgress()" title="Load saved progress">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
-                        Load
+                        <span class="btn-label">Load</span>
                     </button>
                     <button class="btn btn-primary" onclick="App.copyToClipboard()" title="Copy selected to clipboard">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                        Copy
+                        <span class="btn-label">Copy</span>
                     </button>
                     <button class="btn btn-primary" onclick="App.exportCSV()" title="Export selected to CSV">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                        Export
+                        <span class="btn-label">Export</span>
                     </button>
                 </div>
             </div>
@@ -1450,24 +1679,26 @@
             </div>
         </div>
 
-        <div class="help-panel">
-            <h3>How to File a Cyber Crime Complaint / साइबर अपराध की शिकायत कैसे दर्ज करें</h3>
-            <p><strong>Step 1:</strong> Call the National Cyber Crime Helpline: <strong style="font-size: 16px; color: #dc2626;">1930</strong> (available 24x7)</p>
-            <p><strong>Step 2:</strong> File an online complaint at <strong><a href="https://cybercrime.gov.in" target="_blank" rel="noopener" style="color: var(--primary);">cybercrime.gov.in</a></strong></p>
-            <p><strong>Step 3:</strong> Visit your nearest police station with this evidence report and original bank statement.</p>
-            <ul>
-                <li><strong>Transaction ID (UTR/RRN):</strong> 12-22 digit unique reference number found in your bank statement.</li>
-                <li><strong>Beneficiary Details:</strong> Bank Name, Account Number, or UPI ID of the suspected fraudster.</li>
-                <li><strong>Date & Amount:</strong> Exact date and amount of each suspicious transaction.</li>
-                <li><strong>File Hash:</strong> The SHA-256 hash proves your uploaded file was not tampered with.</li>
-            </ul>
-            <p style="margin-top: 8px;"><strong>Tip:</strong> Use "Generate Report" to create a complete evidence report. Print it or copy it for pasting into the complaint form on cybercrime.gov.in.</p>
+        <details class="help-panel">
+            <summary>How to File a Cyber Crime Complaint / साइबर अपराध की शिकायत कैसे दर्ज करें</summary>
+            <div class="help-content">
+                <p><strong>Step 1:</strong> Call the National Cyber Crime Helpline: <strong style="font-size: 16px; color: #dc2626;">1930</strong> (available 24x7)</p>
+                <p><strong>Step 2:</strong> File an online complaint at <strong><a href="https://cybercrime.gov.in" target="_blank" rel="noopener" style="color: var(--primary);">cybercrime.gov.in</a></strong></p>
+                <p><strong>Step 3:</strong> Visit your nearest police station with this evidence report and original bank statement.</p>
+                <ul>
+                    <li><strong>Transaction ID (UTR/RRN):</strong> 12-22 digit unique reference number found in your bank statement.</li>
+                    <li><strong>Beneficiary Details:</strong> Bank Name, Account Number, or UPI ID of the suspected fraudster.</li>
+                    <li><strong>Date & Amount:</strong> Exact date and amount of each suspicious transaction.</li>
+                    <li><strong>File Hash:</strong> The SHA-256 hash proves your uploaded file was not tampered with.</li>
+                </ul>
+                <p style="margin-top: 8px;"><strong>Tip:</strong> Use "Generate Report" to create a complete evidence report. Print it or copy it for pasting into the complaint form on cybercrime.gov.in.</p>
 
-            <div class="privacy-badge">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                100% Client-Side Processing - Your data never leaves your device / आपका डेटा आपके डिवाइस से कभी नहीं जाता
+                <div class="privacy-badge">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    100% Client-Side Processing - Your data never leaves your device / आपका डेटा आपके डिवाइस से कभी नहीं जाता
+                </div>
             </div>
-        </div>
+        </details>
 
         <div class="modal-backdrop" id="detailModal">
             <div class="modal">
