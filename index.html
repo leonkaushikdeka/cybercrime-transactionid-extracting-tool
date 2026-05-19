@@ -411,7 +411,7 @@
             flex-wrap: wrap; gap: 16px;
         }
 
-        .toolbar-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .toolbar-group, .filter-group, .action-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
         .search-input {
             width: 280px; padding: 10px 14px;
@@ -439,6 +439,32 @@
         .filter-select:focus {
             outline: none; border-color: var(--primary);
             background: var(--white);
+        }
+
+        .toolbar input[type="text"],
+        .toolbar input[type="date"],
+        .toolbar select {
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 14px;
+            background: var(--gray-50);
+            transition: all 0.15s ease;
+        }
+
+        .toolbar input[type="text"]:focus,
+        .toolbar input[type="date"]:focus,
+        .toolbar select:focus {
+            outline: none; border-color: var(--primary);
+            background: var(--white); box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+
+        .toolbar input[type="text"] { width: 280px; }
+
+        .tag-select {
+            padding: 8px 12px; border: 1px solid var(--gray-300);
+            border-radius: var(--radius); font-size: 14px;
+            background: var(--gray-50); cursor: pointer; width: 100%;
         }
 
         /* --- Table --- */
@@ -817,8 +843,8 @@
         @media (max-width: 768px) {
             .container { padding: 16px; }
             .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar-group { width: 100%; }
-            .search-input { width: 100%; }
+            .toolbar-group, .filter-group, .action-group { width: 100%; }
+            .search-input, .toolbar input[type="text"] { width: 100%; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .charts-grid { grid-template-columns: 1fr; }
             .step-wizard { gap: 8px; }
@@ -2231,16 +2257,14 @@
 
             setLoading(active, text = 'Processing...') {
                 this.state.isProcessing = active;
-                const { uploadSection, progressContainer, fileInput, progressText } = this.elements;
-                
+                const { progressContainer, fileInput, progressText } = this.elements;
+
                 if (active) {
-                    uploadSection.classList.add('hidden');
                     progressContainer.style.display = 'block';
                     progressText.textContent = text;
                     fileInput.disabled = true;
                     this.state.cancelToken = { isCancelled: false };
                 } else {
-                    uploadSection.classList.remove('hidden');
                     progressContainer.style.display = 'none';
                     fileInput.disabled = false;
                     this.updateProgress(0);
@@ -2404,6 +2428,7 @@
 
                     if (this.state.cancelToken.isCancelled) {
                         this.showNotification('Processing cancelled.', 'warning');
+                        this.elements.uploadSection.classList.remove('hidden');
                         return;
                     }
 
@@ -2781,7 +2806,7 @@
                 const body = document.getElementById('modalBody');
                 
                 const riskLevel = txn.isSuspicious ? '<span class="detail-value suspicious">[SUSPICIOUS]</span>' : '<span class="detail-value" style="color: #059669;">[Normal]</span>';
-                const reason = txn.suspicionReason ? `<tr><td class="detail-label">Reason</td><td class="detail-value suspicious">${txn.suspicionReason}</td></tr>` : '';
+                const reason = txn.suspicionReason ? `<tr><td class="detail-label">Reason</td><td class="detail-value suspicious">${Sanitizer.escapeHTML(txn.suspicionReason)}</td></tr>` : '';
                 const tagDisplay = txn.tag ? `<span style="padding: 2px 8px; border-radius: 4px; font-size: 11px; background: ${txn.tag === 'fraud' ? '#fee2e2' : '#d1fae5'}; color: ${txn.tag === 'fraud' ? '#991b1b' : '#065f46'};">${txn.tag.toUpperCase()}</span>` : '<span style="color: var(--gray-500);">Not tagged</span>';
 
                 body.innerHTML = `
@@ -2792,10 +2817,10 @@
                         <tr><td class="detail-label">Type</td><td class="detail-value">${riskLevel}</td></tr>
                         ${reason}
                         <tr><td class="detail-label">Description</td><td class="detail-value">${Sanitizer.escapeHTML(txn.description)}</td></tr>
-                        <tr><td class="detail-label">Transaction ID</td><td class="detail-value">${txn.transactionId || 'Not found'}</td></tr>
-                        <tr><td class="detail-label">UPI ID</td><td class="detail-value">${txn.upiId || 'Not found'}</td></tr>
+                        <tr><td class="detail-label">Transaction ID</td><td class="detail-value">${Sanitizer.escapeHTML(txn.transactionId) || 'Not found'}</td></tr>
+                        <tr><td class="detail-label">UPI ID</td><td class="detail-value">${Sanitizer.escapeHTML(txn.upiId) || 'Not found'}</td></tr>
                         <tr><td class="detail-label">Tag</td><td class="detail-value">${tagDisplay}</td></tr>
-                        <tr><td class="detail-label">Notes</td><td class="detail-value">${txn.notes || 'No notes'}</td></tr>
+                        <tr><td class="detail-label">Notes</td><td class="detail-value">${Sanitizer.escapeHTML(txn.notes) || 'No notes'}</td></tr>
                     </table>
                     <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
                         <label style="font-size: 12px; color: var(--gray-500); display: block; margin-bottom: 8px;">Add Tag</label>
@@ -2925,8 +2950,11 @@
 
             saveProgress() {
                 try {
+                    CaseManager.save();
                     const data = {
                         transactions: UIManager.state.transactions,
+                        caseDetails: CaseManager.data,
+                        fileHash: document.getElementById('fileHashValue').textContent,
                         savedAt: new Date().toISOString()
                     };
                     localStorage.setItem('cyberCrimeAssistantData', JSON.stringify(data));
@@ -2946,9 +2974,26 @@
                     }
                     const data = JSON.parse(saved);
                     UIManager.state.transactions = data.transactions || [];
+
+                    // Restore case details
+                    if (data.caseDetails) {
+                        CaseManager.data = data.caseDetails;
+                        CaseManager.restore();
+                    }
+
+                    // Restore file hash
+                    if (data.fileHash && data.fileHash !== '—') {
+                        document.getElementById('fileHashValue').textContent = data.fileHash;
+                        document.getElementById('fileHashBadge').classList.remove('hidden');
+                    }
+
+                    document.getElementById('caseDetailsSection').classList.add('hidden');
                     UIManager.elements.uploadSection.classList.add('hidden');
                     UIManager.elements.summaryCards.classList.remove('hidden');
                     UIManager.elements.workspace.classList.remove('hidden');
+                    document.getElementById('generateReportBtn').classList.remove('hidden');
+                    document.getElementById('printReportBtn').classList.remove('hidden');
+                    StepWizard.setStep(3);
                     this.filterData();
                     const date = data.savedAt ? new Date(data.savedAt).toLocaleString() : 'Unknown';
                     UIManager.showNotification(`Loaded ${UIManager.state.transactions.length} transactions from ${date}`, 'success');
@@ -3291,7 +3336,13 @@
         setInterval(() => {
             if (UIManager.state.transactions.length > 0) {
                 try {
-                    const data = { transactions: UIManager.state.transactions, savedAt: new Date().toISOString() };
+                    CaseManager.save();
+                    const data = {
+                        transactions: UIManager.state.transactions,
+                        caseDetails: CaseManager.data,
+                        fileHash: document.getElementById('fileHashValue').textContent,
+                        savedAt: new Date().toISOString()
+                    };
                     localStorage.setItem('cyberCrimeAssistantData', JSON.stringify(data));
                 } catch (e) {}
             }
